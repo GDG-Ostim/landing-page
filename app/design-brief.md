@@ -6,7 +6,17 @@ Concept spine: Açık devre. Sayfa boyunca tekil renk parçaları birbirine yakl
 
 Delivery tier: editorial. Güçlü tipografi, keskin grid, bölüm bazlı mikro hareket ve tek bir kinetik açılış kullanılır.
 
-Animation mode: non-animated — user picked mixed section-specific motion at intake.
+Animation mode: animated-website — kullanıcı hero içinde kısa, scroll ile ileri–geri sarılan 3B logo filmi istedi.
+
+Animation journey: Tek çekim, 5 saniye. 0–15% logonun düz ve tam kilitli hali; 15–55% dört parça kontrollü biçimde ayrılır ve derinlik kazanır; 55–82% çok küçük bir kamera yörüngesi hacmi gösterir; 82–100% parçalar yeniden özgün işaret düzenine oturur.
+
+Visual world grammar: Saf beyaz stüdyo, resmi dört GDG rengi, yumuşak temas gölgesi, parlak fakat ölçülü seramik yüzey. Metin, ek obje, sahne kesmesi veya renk dönüşümü yok.
+
+Mobile framing: Aynı kare film üstte ve ortada, daha küçük encode ile gösterilir; metin aşağıda daha kısa “Kodla. Paylaş. Birlikte büyüt.” başlığına dönüşür.
+
+Cost shape: Tek Seedance üretimi; türev masaüstü/mobil encode ve poster kareleri yerelde hazırlanır.
+
+Delivery budget: Masaüstü MP4 hedefi 2.5 MB altı, mobil MP4 hedefi 1.2 MB altı; H.264, sık keyframe aralığı, ses yok, faststart.
 
 Anti-convergence ledger: Previous build: none, this is the first build in the chat. Current six identity axes are editorial-offset hero, Swiss grid section system, Pristine Light palette, Space Grotesk plus IBM Plex Mono typography, section-specific mixed motion, and the oversized parenthesis as the second-read motif.
 
@@ -28,7 +38,7 @@ Locked type: Space Grotesk display ve IBM Plex Mono metadata. Keskin, teknik ve 
 
 Corner language: 14px yumuşak köşeler yalnızca görsel ve etkinlik yüzeylerinde. Metin blokları ve navigasyon keskin kalır.
 
-Hero architecture: Editorial offset. Dev başlık, sağ alt açıklama ve hareketli GDG işareti; klasik sol metin sağ görsel düzeni yok.
+Hero architecture: Scroll-scrubbed product stage. Masaüstünde solda güçlü başlık, sağda saf beyaz 3B logo filmi; mobilde film üstte ortada, kısa başlık altta.
 
 Section system: Swiss grid discipline with gallery-led cadence.
 

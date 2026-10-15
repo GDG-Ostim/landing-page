@@ -28,25 +28,24 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
   </a>;
 }
 
-function CircuitLines() {
-  return <svg className="circuit-lines" viewBox="0 0 900 720" aria-hidden="true">
-    <path className="circuit blue-line" d="M70 95H355l78 78h190l80 80h125" />
-    <path className="circuit red-line" d="M22 260h250l70 70h185l90 90h220" />
-    <path className="circuit yellow-line" d="M82 520h270l74-74h166l80-80h160" />
-    <path className="circuit green-line" d="M172 665h218l86-86h116l86-86h154" />
-    <circle cx="70" cy="95" r="10" className="node blue-stroke" /><circle cx="22" cy="260" r="10" className="node red-stroke" />
-    <circle cx="82" cy="520" r="10" className="node yellow-stroke" /><circle cx="172" cy="665" r="10" className="node green-stroke" />
-  </svg>;
+function PrincipleIcon({ type }: { type: "learn" | "share" | "build" }) {
+  if (type === "learn") return <svg viewBox="0 0 56 56" aria-hidden="true"><path className="icon-blue" d="M7 12c8-2 15 0 21 5v29c-6-5-13-7-21-5Z"/><path className="icon-red" d="M49 12c-8-2-15 0-21 5v29c6-5 13-7 21-5Z"/><path d="M19 25l-5 4 5 4M37 25l5 4-5 4"/><path className="icon-yellow" d="M31 22l-6 14"/></svg>;
+  if (type === "share") return <svg viewBox="0 0 56 56" aria-hidden="true"><path d="M16 18l23 10-23 10M39 28H26"/><circle className="icon-blue" cx="14" cy="18" r="6"/><circle className="icon-green" cx="42" cy="28" r="6"/><circle className="icon-red" cx="14" cy="39" r="6"/></svg>;
+  return <svg viewBox="0 0 56 56" aria-hidden="true"><path className="icon-yellow" d="M28 6 47 17 28 28 9 17Z"/><path className="icon-blue" d="M9 17v22l19 11V28Z"/><path className="icon-green" d="M47 17v22L28 50V28Z"/><path d="M18 22v10l10 6 10-6V22"/></svg>;
 }
 
 function LandingPage() {
   const railRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [motionEnabled, setMotionEnabled] = useState(false);
   useEffect(() => { const close = () => setMenuOpen(false); window.addEventListener("resize", close); return () => window.removeEventListener("resize", close); }, []);
   useEffect(() => {
     const root = document.documentElement;
     root.classList.add("js-motion");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setMotionEnabled(!reduceMotion);
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
     if (reduceMotion) {
       revealItems.forEach(item => item.classList.add("is-visible"));
@@ -67,7 +66,17 @@ function LandingPage() {
     const updateScroll = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const heroProgress = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1);
+        const hero = heroRef.current;
+        const video = videoRef.current;
+        let heroProgress = 0;
+        if (hero) {
+          const rect = hero.getBoundingClientRect();
+          heroProgress = Math.max(0, Math.min(-rect.top / Math.max(hero.offsetHeight - window.innerHeight, 1), 1));
+        }
+        if (video && Number.isFinite(video.duration) && video.duration > 0) {
+          const target = heroProgress * Math.max(video.duration - 0.04, 0);
+          if (Math.abs(video.currentTime - target) > 0.025) video.currentTime = target;
+        }
         const pageProgress = window.scrollY / Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
         root.style.setProperty("--hero-progress", heroProgress.toFixed(3));
         root.style.setProperty("--page-progress", Math.min(pageProgress, 1).toFixed(3));
@@ -86,7 +95,7 @@ function LandingPage() {
 
   return <main id="top"><div className="scroll-progress" aria-hidden="true" />
     <header className="site-header"><BrandMark />
-      <button className="menu-toggle" type="button" aria-expanded={menuOpen} aria-controls="site-nav" onClick={() => setMenuOpen(open => !open)}>
+      <button className={`menu-toggle${menuOpen ? " is-open" : ""}`} type="button" aria-expanded={menuOpen} aria-controls="site-nav" onClick={() => setMenuOpen(open => !open)}>
         <span /><span /><span /><span className="sr-only">Menüyü aç</span>
       </button>
       <nav id="site-nav" className={menuOpen ? "nav-open" : ""} aria-label="Ana menü">
@@ -95,13 +104,19 @@ function LandingPage() {
       </nav>
     </header>
 
-    <section className="hero" aria-labelledby="hero-title">
-      <div className="hero-grid" aria-hidden="true" />
-      <figure className="hero-visual"><img src="/assets/hero.webp" alt="Mavi, kırmızı, sarı ve yeşil parçalarla oluşturulmuş teknoloji yerleştirmesi" /></figure>
-      <div className="corner corner-blue" /><div className="corner corner-red" /><div className="corner corner-yellow" /><div className="corner corner-green" />
-      <div className="hero-copy"><h1 id="hero-title"><span>Teknolojiyi</span><span>birlikte üretiyoruz.</span></h1>
-        <div className="hero-note"><p>Ankara'da öğrenen, paylaşan ve üreten geliştirici topluluğu.</p><a href="#events">Etkinlikleri keşfet <span aria-hidden="true">↓</span></a></div>
-      </div><CircuitLines />
+    <section className="hero" ref={heroRef} aria-labelledby="hero-title">
+      <div className="hero-sticky">
+        <div className="hero-copy"><h1 id="hero-title"><span className="hero-title-desktop">Teknolojiyi<br/>birlikte üretiyoruz.</span><span className="hero-title-mobile">Kodla. Paylaş.<br/>Birlikte büyüt.</span></h1>
+          <div className="hero-note"><p>Ankara'da öğrenen, paylaşan ve üreten geliştirici topluluğu.</p><a href="#events">Etkinlikleri keşfet <span aria-hidden="true">↓</span></a></div>
+        </div>
+        <figure className="hero-motion" aria-label="GDG işaretinin üç boyutlu hareketi">
+          <video ref={videoRef} muted playsInline preload={motionEnabled ? "auto" : "none"} poster="/assets/hero-logo-poster.jpg">
+            {motionEnabled && <source src="/assets/hero-logo-motion-mobile.mp4" type="video/mp4" media="(max-width: 560px)" />}
+            {motionEnabled && <source src="/assets/hero-logo-motion.mp4" type="video/mp4" />}
+          </video>
+          <figcaption>Kaydırdıkça fikir parçaları bir araya gelir.</figcaption>
+        </figure>
+      </div>
     </section>
 
     <section className="about-section section-shell" id="about" aria-labelledby="about-title">
@@ -109,9 +124,9 @@ function LandingPage() {
         <h2 id="about-title" data-reveal="up">Merakın buluştuğu yer.</h2>
         <p className="about-lead" data-reveal="up">Teknolojiye ilgi duyan insanları bir araya getiriyor, deneyimi açıkça paylaşıyor ve fikirleri birlikte çalışan projelere dönüştürüyoruz.</p>
         <div className="principles">
-          <article data-reveal="left"><span>01</span><h3>Birlikte öğren</h3><p>Workshop, konuşma ve çalışma gruplarıyla bilgiyi çoğalt.</p></article>
-          <article data-reveal="right"><span>02</span><h3>Açıkça paylaş</h3><p>Deneyimini topluluğa aktar, yeni bakış açılarıyla karşılaş.</p></article>
-          <article data-reveal="left"><span>03</span><h3>Birlikte üret</h3><p>Fikrini ekiple buluştur, çalışan bir ürüne dönüştür.</p></article>
+          <article data-reveal="left"><span className="principle-icon"><PrincipleIcon type="learn" /></span><h3>Birlikte öğren</h3><p>Workshop, konuşma ve çalışma gruplarıyla bilgiyi çoğalt.</p></article>
+          <article data-reveal="right"><span className="principle-icon"><PrincipleIcon type="share" /></span><h3>Açıkça paylaş</h3><p>Deneyimini topluluğa aktar, yeni bakış açılarıyla karşılaş.</p></article>
+          <article data-reveal="left"><span className="principle-icon"><PrincipleIcon type="build" /></span><h3>Birlikte üret</h3><p>Fikrini ekiple buluştur, çalışan bir ürüne dönüştür.</p></article>
         </div>
       </div><div className="parenthesis parenthesis-right" aria-hidden="true">)</div>
     </section>
