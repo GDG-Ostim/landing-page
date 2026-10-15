@@ -23,7 +23,7 @@ const team = [
 
 function BrandMark({ compact = false }: { compact?: boolean }) {
   return <a className="brand" href="#top" aria-label="GDG Ostim Tech ana sayfa">
-    <img src="/assets/gdg-mark.png" alt="" width="70" height="70" />
+    <img src="/assets/gdg-mark-exact.png" alt="" width="70" height="70" />
     {!compact && <span>Google Developer Group<b>Ostim Tech</b></span>}
   </a>;
 }
