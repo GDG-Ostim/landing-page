@@ -1,3 +1,6 @@
 node_modules
 .higgs-template/
 .higgs-template-secure/
+
+# Raw Higgsfield generations (final assets live in app/public/assets)
+refs/gen/

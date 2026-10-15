@@ -21,10 +21,10 @@ const team = [
   { initials: "KA", name: "Karya Elif Aksu", role: "Core Team", color: "red" },
 ];
 
-function BrandMark({ compact = false }: { compact?: boolean }) {
-  return <a className="brand" href="#top" aria-label="GDG Ostim Tech ana sayfa">
+function Logo() {
+  return <a className="logo" href="#top" aria-label="GDG Ostim Tech ana sayfa">
     <img src="/assets/gdg-mark-exact.png" alt="" width="70" height="70" />
-    {!compact && <span>Google Developer Group<b>Ostim Tech</b></span>}
+    <span>Ostim Tech<small>Google Developer Group</small></span>
   </a>;
 }
 
@@ -37,7 +37,17 @@ function PrincipleIcon({ type }: { type: "learn" | "share" | "build" }) {
 function LandingPage() {
   const railRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  useEffect(() => { const close = () => setMenuOpen(false); window.addEventListener("resize", close); return () => window.removeEventListener("resize", close); }, []);
+  const [scrolled, setScrolled] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  useEffect(() => {
+    // The header border only appears once the page has moved.
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    setReduceMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  useEffect(() => { const close = () => { if (window.innerWidth > 900) setMenuOpen(false); }; window.addEventListener("resize", close); return () => window.removeEventListener("resize", close); }, []);
   useEffect(() => {
     const root = document.documentElement;
     root.classList.add("js-motion");
@@ -58,41 +68,45 @@ function LandingPage() {
     }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
     revealItems.forEach(item => observer.observe(item));
 
-    let frame = 0;
-    const updateScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const pageProgress = window.scrollY / Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-        root.style.setProperty("--page-progress", Math.min(pageProgress, 1).toFixed(3));
-      });
-    };
-    updateScroll();
-    window.addEventListener("scroll", updateScroll, { passive: true });
     return () => {
       observer.disconnect();
-      window.removeEventListener("scroll", updateScroll);
-      cancelAnimationFrame(frame);
       root.classList.remove("js-motion");
     };
   }, []);
   const moveRail = (direction: number) => railRef.current?.scrollBy({ left: direction * 420, behavior: "smooth" });
 
-  return <main id="top"><div className="scroll-progress" aria-hidden="true" />
-    <header className="site-header"><BrandMark />
-      <button className={`menu-toggle${menuOpen ? " is-open" : ""}`} type="button" aria-expanded={menuOpen} aria-controls="site-nav" onClick={() => setMenuOpen(open => !open)}>
-        <span /><span /><span /><span className="sr-only">Menüyü aç</span>
-      </button>
-      <nav id="site-nav" className={menuOpen ? "nav-open" : ""} aria-label="Ana menü">
-        <a href="#about" onClick={() => setMenuOpen(false)}>Hakkımızda</a><a href="#events" onClick={() => setMenuOpen(false)}>Etkinlikler</a>
-        <a href="#team" onClick={() => setMenuOpen(false)}>Ekip</a><a className="nav-join" href="#join" onClick={() => setMenuOpen(false)}>Katıl <span>↗</span></a>
-      </nav>
+  return <main id="top">
+    <header className={`topbar${scrolled ? " is-scrolled" : ""}`}>
+      <div className="topbar-inner">
+        <Logo />
+        <button className="menu-btn" type="button" aria-expanded={menuOpen} aria-controls="site-nav" aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"} onClick={() => setMenuOpen(open => !open)}><i /><i /><i /></button>
+        <nav id="site-nav" className={`topnav${menuOpen ? " is-open" : ""}`} aria-label="Ana menü">
+          <a href="#about" onClick={() => setMenuOpen(false)}>Hakkımızda</a>
+          <a href="#events" onClick={() => setMenuOpen(false)}>Etkinlikler</a>
+          <a href="#team" onClick={() => setMenuOpen(false)}>Ekip</a>
+          <a className="btn btn-sm" href="#join" onClick={() => setMenuOpen(false)}>Katıl</a>
+        </nav>
+      </div>
     </header>
 
-    <section className="hero hero-text-only" aria-labelledby="hero-title">
-      <div className="hero-text">
-        <p className="section-index">GOOGLE DEVELOPER GROUP · OSTIM TECH</p>
-        <h1 id="hero-title"><span>Teknolojiyi</span><span>birlikte üretiyoruz.</span></h1>
-        <p className="hero-lead">Ankara'da öğrenen, paylaşan ve üreten geliştirici topluluğu.</p>
+    <section className="hero" aria-labelledby="hero-title">
+      <div className="hero-inner">
+        <div className="hero-art">
+          {reduceMotion
+            ? <img src="/assets/hero-dragon.webp" alt="" width="960" height="960" />
+            : <video autoPlay muted loop playsInline preload="auto" poster="/assets/hero-dragon.webp" aria-hidden="true">
+                <source src="/assets/hero-dragon.webm" type="video/webm" />
+                <source src="/assets/hero-dragon.mp4" type="video/mp4" />
+              </video>}
+        </div>
+        <div className="hero-copy">
+          <h1 id="hero-title">Teknolojiyi <em>birlikte</em> öğren, paylaş ve üret!</h1>
+          <p className="hero-lead">Ankara'da öğrenen, paylaşan ve üreten geliştiricilerin topluluğu. Etkinliklere katıl, ekibe dahil ol.</p>
+          <div className="hero-actions">
+            <a className="btn btn-block" href="#join">Topluluğa katıl</a>
+            <a className="btn btn-secondary btn-block" href="#events">Etkinlikleri gör</a>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -142,7 +156,12 @@ function LandingPage() {
         <a className="join-link" href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer"><span>Topluluğa katıl</span><b aria-hidden="true">↗</b></a>
       </div>
     </section>
-    <footer><div className="footer-main"><BrandMark /><div className="footer-links"><a href="#about">Hakkımızda</a><a href="#events">Etkinlikler</a><a href="#team">Ekip</a><a href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">LinkedIn ↗</a></div></div>
+    <footer>
+      <a className="sponsor" href="https://veriteknik.com" target="_blank" rel="noopener" aria-label="Sponsorumuz VeriTeknik — veriteknik.com">
+        <div className="sponsor-copy"><p className="sponsor-label">Sponsorumuz</p><p className="sponsor-text">Topluluğumuzu destekleyen VeriTeknik'e teşekkür ederiz.</p></div>
+        <span className="sponsor-logo"><img src="/assets/veriteknik-logo.png" alt="VeriTeknik" width="720" height="161" loading="lazy" /><i aria-hidden="true">↗</i></span>
+      </a>
+      <div className="footer-main"><Logo /><div className="footer-links"><a href="#about">Hakkımızda</a><a href="#events">Etkinlikler</a><a href="#team">Ekip</a><a href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">LinkedIn ↗</a></div></div>
       <div className="footer-bottom"><span>© 2026 GDG Ostim Tech</span><span>Ankara, Türkiye</span></div><div className="color-rule" aria-hidden="true"><i /><i /><i /><i /></div>
     </footer>
   </main>;
