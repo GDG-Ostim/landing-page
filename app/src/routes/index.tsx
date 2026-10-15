@@ -20,6 +20,7 @@ const chipColors = ["blue", "red", "yellow", "green"];
 const stickers = ["phone", "browser", "cloud", "ai", "game", "palette"];
 // `avatar` is the member's mascot-style portrait (public/assets/team/*.webp); until then the card shows initials.
 const team: { initials: string; name: string; role: string; color: string; avatar?: string }[] = [
+  { initials: "MA", name: "Mehmet Ali İlhan", role: "Başkan Yardımcısı", color: "red", avatar: "/assets/team/mehmet.webp" },
   { initials: "EY", name: "Ezel Yazıcı", role: "Topluluk Başkanı", color: "blue", avatar: "/assets/team/ezel.webp" },
   { initials: "PA", name: "Poyraz Avsever", role: "Teknoloji Komitesi Başkanı", color: "green", avatar: "/assets/team/poyraz.webp" },
   { initials: "YA", name: "Yusuf Türker Albayrak", role: "Teknoloji Komitesi Başkan Yardımcısı", color: "green", avatar: "/assets/team/yusuf.webp" },
@@ -27,8 +28,6 @@ const team: { initials: string; name: string; role: string; color: string; avata
   { initials: "BK", name: "Begüm Kocabıçakoğlu", role: "Sosyal Medya", color: "yellow", avatar: "/assets/team/begum.webp" },
   { initials: "EG", name: "Emir Güzel", role: "Partnerlik Lideri", color: "blue", avatar: "/assets/team/emir.webp" },
   { initials: "FO", name: "Fatih Tuğra Odabaş", role: "Organizasyon", color: "red", avatar: "/assets/team/fatih.webp" },
-  // TODO: real name pending from the team
-  { initials: "İS", name: "İsim Soyisim", role: "Ekip Üyesi", color: "green", avatar: "/assets/team/isimsiz.webp" },
 ];
 
 function Logo() {
