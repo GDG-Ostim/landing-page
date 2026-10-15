@@ -4,6 +4,7 @@ import { Icon, type IconName } from "../lib/social";
 import { BackIcon, Brand, CheckIcon, Confetti, EyeIcon, KeyIcon, LockIcon, Mascot, api } from "../admin/ui";
 import { LinksScreen } from "../admin/links-screen";
 import { SocialScreen } from "../admin/social-screen";
+import { EventsScreen } from "../admin/events-screen";
 import "../admin.css";
 
 export const Route = createFileRoute("/admin")({
@@ -20,16 +21,16 @@ export const Route = createFileRoute("/admin")({
 type Admin = { username: string };
 type Screen = "loading" | "login" | "authenticated" | "unavailable";
 type Mood = "idle" | "shy" | "thinking" | "oops" | "tired";
-type View = "home" | "links" | "social";
+type View = "home" | "links" | "social" | "events";
 
 // The admin's quest path. A quest with a `view` is a finished screen the node opens.
 const quests: { id: string; title: string; note: string; icon: IconName | "key"; view?: View; done: boolean }[] = [
   { id: "login", title: "Yönetici girişi", note: "Güvenli oturum ve kalıcı veri altyapısı", icon: "key", done: true },
   { id: "links", title: "Linkler", note: "/links sayfasındaki kartları yönet", icon: "users", view: "links", done: true },
   { id: "social", title: "Sosyal adresler", note: "Instagram, LinkedIn ve e-posta", icon: "instagram", view: "social", done: true },
-  { id: "events", title: "Etkinlikler", note: "Ana sayfadaki etkinlik slider'ı", icon: "calendar", done: false },
+  { id: "events", title: "Etkinlikler", note: "Ana sayfadaki etkinlik slider'ı", icon: "calendar", view: "events", done: true },
 ];
-const views: View[] = ["home", "links", "social"];
+const views: View[] = ["home", "links", "social", "events"];
 
 const bubbles: Record<Mood, string> = {
   idle: "Selam! Paneli açmak için giriş yap.",
@@ -130,6 +131,7 @@ function AdminPage() {
 
       {view === "links" && <LinksScreen onExpired={expired} />}
       {view === "social" && <SocialScreen onExpired={expired} />}
+      {view === "events" && <EventsScreen onExpired={expired} />}
 
       {view === "home" && <>
         <section className="admin-hello" aria-labelledby="admin-title">
@@ -141,7 +143,7 @@ function AdminPage() {
             <div className="admin-progress" role="progressbar" aria-label="Kurulum ilerlemesi" aria-valuemin={0} aria-valuemax={quests.length} aria-valuenow={done}>
               <span style={{ width: `${(done / quests.length) * 100}%` }} />
             </div>
-            <small className="admin-progress-label">{done} / {quests.length} görev tamamlandı</small>
+            <small className="admin-progress-label">{done === quests.length ? "Bütün bölümler hazır, iyi yönetimler!" : `${done} / ${quests.length} görev tamamlandı`}</small>
           </div>
         </section>
 

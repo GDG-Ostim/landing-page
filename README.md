@@ -73,6 +73,13 @@ deployment step. Use the root `bun.lock`; do not create a separate workspace loc
 | GET | `/api/social` | Public `{ instagram, linkedin, email }` |
 | GET / PUT | `/api/admin/social` | Read / save all three at once; per-field `errors` on HTTP 400 |
 
+| GET | `/api/events` | Public events in slider order |
+| GET / POST | `/api/admin/events` | List / add `{ title, startsOn, endsOn?, kind, place, cover, url? }` |
+| PUT / DELETE | `/api/admin/events/:id` | Replace / remove an event (its uploaded cover is deleted) |
+| POST | `/api/admin/events/:id/move` | `{ direction: "up" \| "down" }` |
+| POST | `/api/admin/uploads` | Raw JPG/PNG/WebP body (≤ 5 MB) → `{ url: "/api/uploads/<random>.<ext>" }` |
+| GET | `/api/uploads/:name` | Uploaded image, cached as immutable |
+
 Link addresses accept `https://`/`http://`, e-mail (stored as `mailto:`) or a same-site path
 such as `/`. Icons come from a fixed list shared by `api/src/links.ts` and `app/src/lib/social.tsx`.
 Schema changes are append-only entries in `api/src/database.ts`.
@@ -129,5 +136,13 @@ Phase 3: Instagram, LinkedIn and e-mail are stored once (`settings` table) and r
 through `useSocial()` by the header, footer, `/links` icons and the "Duyuruları
 takip et" button. Instagram/LinkedIn must stay on their own domains (`@name` and a
 missing `https://` are filled in); the e-mail is stored bare and `mailto:` is added
-by the site. The admin view lives in `?view=links|social`. Link CRUD, social
+by the site. The admin view lives in `?view=links|social|events`.
+
+Phase 4: events (`events` table, seeded with the three previous cards and their
+built-in covers) feed the "Birlikte öğrenmenin takvimi" slider: same cards, arrows
+only when cards overflow (so never for a single event), swipe on touch, arrow /
+Home / End keys on the focused track, no autoplay, and a "yakında" card instead of
+an empty slider. Uploaded covers are type-checked by their bytes, stored under
+random names in `DATA_DIR/uploads`, downscaled in the browser to 1600px first, and
+deleted when replaced, when their event is deleted, or (unsaved) after 24 hours. Link CRUD, social
 settings and event management are deliberately left for their own phases.

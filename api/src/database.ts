@@ -63,6 +63,31 @@ const migrations: Migration[] = [
       ["social.email", "gdgostimtech@outlook.com"],
     ].forEach(([key, value]) => insert.run(key, value, Date.now()));
   },
+  db => {
+    db.exec(`
+      CREATE TABLE events (
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        starts_on TEXT NOT NULL,
+        ends_on TEXT,
+        kind TEXT NOT NULL,
+        place TEXT NOT NULL,
+        cover TEXT NOT NULL,
+        url TEXT NOT NULL DEFAULT '',
+        position INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      );
+      CREATE INDEX events_position ON events(position);
+    `);
+    // The three cards the home page showed before the panel existed; their covers ship with the site.
+    const insert = db.prepare(`INSERT INTO events (title, starts_on, ends_on, kind, place, cover, position, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+    [
+      ["Kulüp Tanıtım Günleri", "2026-10-06", "2026-10-08", "Topluluk buluşması", "OSTİM Teknik Üniversitesi", "/assets/event-intro.webp"],
+      ["GDG On Campus Hackathon", "2026-04-04", "2026-04-05", "48 saatlik hackathon", "OSTİM Teknik Üniversitesi", "/assets/event-hackathon.webp"],
+      ["Engineerium '26", "2026-02-24", null, "Mühendislik zirvesi", "Konferans Salonu", "/assets/event-summit.webp"],
+    ].forEach((row, index) => insert.run(...row, index, Date.now()));
+  },
 ];
 
 export function openDatabase(dataDir: string) {

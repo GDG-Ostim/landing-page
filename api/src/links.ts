@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Db } from "./database.js";
+import { ordering } from "./ordering.js";
 
 // Must match the icon set in app/src/lib/social.tsx.
 export const LINK_ICONS = ["users", "whatsapp", "instagram", "linkedin", "mail", "world", "github", "youtube", "calendar"] as const;
@@ -46,8 +47,7 @@ export function publicLinks(db: Db) {
 /** Mounted below the /api/admin session guard. */
 export function adminLinks(db: Db) {
   const router = Router();
-  // Positions are rewritten as 0..n-1 after every change, so moves are simple swaps.
-  const renumber = () => list(db).forEach((link, index) => db.prepare("UPDATE links SET position = ? WHERE id = ?").run(index, link.id));
+  const order = ordering(db, "links");
   const find = (id: string) => /^\d{1,9}$/.test(id) ? db.prepare(`SELECT ${COLUMNS} FROM links WHERE id = ?`).get(Number(id)) as Link | undefined : undefined;
   const notFound = { error: "Link bulunamadı." };
 
@@ -60,11 +60,8 @@ export function adminLinks(db: Db) {
       res.status(400).json({ error: "En fazla 50 link eklenebilir." });
       return;
     }
-    const id = db.transaction(() => {
-      const { next } = db.prepare("SELECT coalesce(max(position) + 1, 0) AS next FROM links").get() as { next: number };
-      return db.prepare("INSERT INTO links (title, url, icon, note, position, updated_at) VALUES (?, ?, ?, ?, ?, ?)")
-        .run(value.title, value.url, value.icon, value.note, next, Date.now()).lastInsertRowid;
-    })();
+    const id = db.transaction(() => db.prepare("INSERT INTO links (title, url, icon, note, position, updated_at) VALUES (?, ?, ?, ?, ?, ?)")
+      .run(value.title, value.url, value.icon, value.note, order.next(), Date.now()).lastInsertRowid)();
     res.status(201).json({ link: find(String(id)), links: list(db) });
   });
 
@@ -81,23 +78,16 @@ export function adminLinks(db: Db) {
   router.delete("/links/:id", (req, res) => {
     const link = find(req.params.id);
     if (!link) { res.status(404).json(notFound); return; }
-    db.transaction(() => { db.prepare("DELETE FROM links WHERE id = ?").run(link.id); renumber(); })();
+    db.transaction(() => { db.prepare("DELETE FROM links WHERE id = ?").run(link.id); order.renumber(); })();
     res.json({ links: list(db) });
   });
 
   router.post("/links/:id/move", (req, res) => {
     const direction = req.body?.direction;
     if (direction !== "up" && direction !== "down") { res.status(400).json({ error: "Yön up veya down olmalı." }); return; }
-    if (!find(req.params.id)) { res.status(404).json(notFound); return; }
-    db.transaction(() => {
-      renumber();
-      const links = list(db);
-      const index = links.findIndex(link => link.id === Number(req.params.id));
-      const other = links[direction === "up" ? index - 1 : index + 1];
-      if (!other) return;
-      db.prepare("UPDATE links SET position = ? WHERE id = ?").run(other.position, links[index].id);
-      db.prepare("UPDATE links SET position = ? WHERE id = ?").run(links[index].position, other.id);
-    })();
+    const link = find(req.params.id);
+    if (!link) { res.status(404).json(notFound); return; }
+    order.move(link.id, direction);
     res.json({ links: list(db) });
   });
   return router;

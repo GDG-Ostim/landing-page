@@ -138,7 +138,29 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}img,video{display:blo
 .events-head{text-align:center;max-width:620px;margin:0 auto clamp(40px,5vw,64px)}
 .events-head h2{margin:0;font-family:var(--font-display);font-weight:800;font-size:clamp(34px,4.4vw,56px);line-height:1.05;color:var(--text)}
 .events-head p{margin:14px 0 0;font-size:clamp(16px,1.4vw,18px);line-height:1.55;color:var(--text-soft)}
-.events-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+/* Slider: same cards, three per view on desktop, swipeable on touch. No autoplay. */
+.events-slider{position:relative}
+.events-track{display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;margin:-8px -6px -14px;padding:8px 6px 14px;scroll-padding:0 6px}
+.events-track::-webkit-scrollbar{display:none}
+.events-track:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:24px}
+.events-track>.event{flex:0 0 calc((100% - 48px) / 3);scroll-snap-align:start}
+.events-arrow{position:absolute;z-index:2;top:calc(50% - 32px);width:56px;height:56px;display:grid;place-items:center;padding:0;border:2px solid var(--border);border-radius:50%;background:#fff;color:var(--blue);box-shadow:0 4px 0 var(--border);cursor:pointer;transition:transform .1s ease-out,box-shadow .1s ease-out,opacity .2s,background .15s}
+.events-arrow svg{width:26px;height:26px}
+.events-arrow:hover{background:var(--blue-tint)}
+.events-arrow:active{transform:translateY(4px);box-shadow:0 0 0 var(--border)}
+.events-arrow:disabled{opacity:0;pointer-events:none}
+.events-arrow.is-prev{left:-28px}.events-arrow.is-next{right:-28px}
+.events-empty{max-width:520px;margin:0 auto;padding:28px 24px;text-align:center;border:2px dashed var(--border);border-radius:20px;background:var(--surface)}
+.events-empty b{font-family:var(--font-display);font-weight:800;font-size:24px}
+.events-empty p{margin:6px 0 0;color:var(--text-soft)}
+a.event{color:inherit}
+.event.green{--tint:var(--green-tint);--accent:var(--green);--accent-ink:var(--green-shadow)}
+.event-cover.is-photo{padding:0}
+.event-cover.is-photo img{object-fit:cover}
+.event-cover-empty{font-weight:800;color:var(--accent-ink);opacity:.6}
+.event-more{display:inline-flex;align-items:center;gap:4px;margin-top:12px;font-weight:900;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink)}
+.event-more svg{width:14px;height:14px}
+@media(max-width:1100px) and (min-width:901px){.events-track>.event{flex-basis:calc((100% - 24px) / 2)}}
 .event{--tint:var(--blue-tint);--accent:var(--blue);--accent-ink:#1A56C4;display:flex;flex-direction:column;border:2px solid var(--border);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--border);overflow:hidden;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
 .event.red{--tint:var(--dragon-tint);--accent:var(--dragon);--accent-ink:var(--dragon-dark)}
 .event.yellow{--tint:var(--yellow-tint);--accent:var(--yellow);--accent-ink:#8A6400}
@@ -300,10 +322,10 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}img,video{display:blo
   .sticker-game,.sticker-palette{bottom:3%}
   .sticker-phone,.sticker-game{left:2%}.sticker-cloud,.sticker-palette{right:2%}
   .tracks{padding-top:96px;padding-bottom:110px}
-  /* Event cards become a swipeable rail */
-  .events-grid{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(var(--gutter) * -1);padding:0 var(--gutter) 12px;scrollbar-width:none}
-  .events-grid::-webkit-scrollbar{display:none}
-  .event{flex:0 0 min(82vw,360px);scroll-snap-align:center}
+  /* Touch: the rail runs edge to edge and is swiped; arrows stay a desktop affordance. */
+  .events-track{gap:16px;margin:-8px calc(var(--gutter) * -1) -14px;padding:8px var(--gutter) 14px;scroll-padding:0 var(--gutter)}
+  .events-track>.event{flex:0 0 min(82vw,360px);scroll-snap-align:center}
+  .events-arrow{display:none}
   .team-grid{--cols:3}
   .sponsor{flex-direction:column;align-items:flex-start;padding:22px}
   .footer-cols{grid-template-columns:1fr 1fr;gap:32px 24px}

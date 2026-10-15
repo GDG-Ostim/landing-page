@@ -73,7 +73,7 @@ test("sessions and migrations survive reopen; expired sessions stop working", as
   const auth = cookie(await f.login());
   await f.restart();
   assert.equal((await f.call("/api/admin/session", { headers: { Cookie: auth } })).status, 200);
-  assert.deepEqual(f.db.prepare("SELECT version FROM migrations ORDER BY version").all(), [{ version: 1 }, { version: 2 }, { version: 3 }]);
+  assert.deepEqual(f.db.prepare("SELECT version FROM migrations ORDER BY version").all(), [{ version: 1 }, { version: 2 }, { version: 3 }, { version: 4 }]);
   f.advance(8 * 60 * 60 * 1000 + 1);
   assert.equal((await f.call("/api/admin/session", { headers: { Cookie: auth } })).status, 401);
 });

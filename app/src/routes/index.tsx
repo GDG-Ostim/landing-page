@@ -1,15 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { asset } from "../lib/asset";
 import { Icon, SocialTiles, links, useSocial } from "../lib/social";
+import { EventCard, useEvents } from "../lib/events";
 
 export const Route = createFileRoute("/")({ component: LandingPage });
 
-const events = [
-  { id: "intro", color: "blue", date: "06-08 Ekim 2026", title: "Kulüp Tanıtım Günleri", type: "Topluluk buluşması", place: "OSTİM Teknik Üniversitesi" },
-  { id: "hackathon", color: "red", date: "04-05 Nisan 2026", title: "GDG On Campus Hackathon", type: "48 saatlik hackathon", place: "OSTİM Teknik Üniversitesi" },
-  { id: "summit", color: "yellow", date: "24 Şubat 2026", title: "Engineerium '26", type: "Mühendislik zirvesi", place: "Konferans Salonu" },
-];
 const about = [
   { id: "open", title: "Herkese açık, tamamen ücretsiz.", text: "Bölümün, sınıfın ya da deneyimin fark etmez. Etkinliklerimiz teknolojiye merak duyan herkese açık ve ücretsiz." },
   { id: "learn", title: "Birlikte öğren.", text: "Workshop'lar, çalışma grupları ve eğitim serileriyle Android'den yapay zekâya, web'den buluta yeni şeyler öğren." },
@@ -66,6 +62,71 @@ function LoopArt({ name }: { name: string }) {
 /** "Follow announcements" opens the LinkedIn page managed in the admin panel. */
 function FollowButton() {
   return <a className="btn btn-blue" href={useSocial().linkedin} target="_blank" rel="noreferrer">Duyuruları takip et</a>;
+}
+
+function Chevron({ back = false }: { back?: boolean }) {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={back ? "M15 6l-6 6 6 6" : "M9 6l6 6-6 6"} /></svg>;
+}
+
+/**
+ * Events from the admin panel as a horizontal rail: arrows on desktop (only when the
+ * cards overflow), native swipe on touch, arrow/Home/End keys on the focused track.
+ */
+function EventsSlider() {
+  const events = useEvents();
+  const track = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ start: true, end: true });
+  const update = useCallback(() => {
+    const element = track.current;
+    if (!element) return;
+    const max = element.scrollWidth - element.clientWidth;
+    setEdges({ start: element.scrollLeft <= 4, end: element.scrollLeft >= max - 4 });
+  }, []);
+  // When the live list replaces the seed, scroll snapping would keep the old first card
+  // in view; a new order always starts from the first card instead.
+  const order = events.map(event => event.id).join(",");
+  useEffect(() => {
+    const element = track.current;
+    if (!element) return;
+    element.scrollLeft = 0;
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [update, order]);
+
+  const smooth = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  function step(direction: 1 | -1) {
+    const element = track.current;
+    const card = element?.querySelector<HTMLElement>(".event");
+    if (!element || !card) return;
+    const gap = parseFloat(getComputedStyle(element).columnGap) || 0;
+    element.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: smooth() });
+  }
+  function onKey(event: KeyboardEvent<HTMLDivElement>) {
+    const element = track.current;
+    if (!element || event.target !== element) return;
+    const actions: Record<string, () => void> = {
+      ArrowRight: () => step(1), ArrowLeft: () => step(-1),
+      Home: () => element.scrollTo({ left: 0, behavior: smooth() }),
+      End: () => element.scrollTo({ left: element.scrollWidth, behavior: smooth() }),
+    };
+    if (actions[event.key]) { event.preventDefault(); actions[event.key](); }
+  }
+
+  if (!events.length) return <div className="events-empty">
+    <b>Yeni etkinlikler çok yakında!</b>
+    <p>Takvim hazırlanıyor. Duyuruları kaçırmamak için bizi takip et.</p>
+  </div>;
+  const scrollable = !(edges.start && edges.end);
+  return <div className={`events-slider${scrollable ? " is-scrollable" : ""}`}>
+    {scrollable && <button className="events-arrow is-prev" onClick={() => step(-1)} disabled={edges.start} aria-label="Önceki etkinlikler" aria-controls="events-track"><Chevron back /></button>}
+    <div id="events-track" className="events-track" ref={track} onScroll={update} onKeyDown={onKey}
+      role="region" aria-label="Etkinlikler" tabIndex={scrollable ? 0 : undefined}>
+      {events.map((event, index) => <EventCard event={event} index={index} key={event.id} />)}
+    </div>
+    {scrollable && <button className="events-arrow is-next" onClick={() => step(1)} disabled={edges.end} aria-label="Sonraki etkinlikler" aria-controls="events-track"><Chevron /></button>}
+  </div>;
 }
 
 function LandingPage() {
@@ -168,12 +229,7 @@ function LandingPage() {
         <h2 id="events-title">Birlikte öğrenmenin takvimi.</h2>
         <p>Son etkinliklerimizden birkaçı. Sıradakini kaçırmamak için duyurularımızı takip et.</p>
       </div>
-      <div className="events-grid">
-        {events.map((event, index) => <article className={`event ${event.color}`} data-reveal="up" style={{ "--delay": `${index * 90}ms` } as CSSProperties} key={event.id}>
-          <div className="event-cover"><img src={asset(`/assets/event-${event.id}.webp`)} alt="" width="640" height="440" loading="lazy" /></div>
-          <div className="event-body"><time>{event.date}</time><h3>{event.title}</h3><p>{event.type} · {event.place}</p></div>
-        </article>)}
-      </div>
+      <div className="events-stage" data-reveal="up"><EventsSlider /></div>
       <div className="events-cta"><FollowButton /></div>
     </section>
 
