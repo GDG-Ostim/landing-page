@@ -39,13 +39,11 @@ function LandingPage() {
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [motionEnabled, setMotionEnabled] = useState(false);
   useEffect(() => { const close = () => setMenuOpen(false); window.addEventListener("resize", close); return () => window.removeEventListener("resize", close); }, []);
   useEffect(() => {
     const root = document.documentElement;
     root.classList.add("js-motion");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setMotionEnabled(!reduceMotion);
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
     if (reduceMotion) {
       revealItems.forEach(item => item.classList.add("is-visible"));
@@ -82,12 +80,35 @@ function LandingPage() {
         root.style.setProperty("--page-progress", Math.min(pageProgress, 1).toFixed(3));
       });
     };
+    let blobUrl: string | null = null;
+    let active = true;
+    const video = videoRef.current;
+    if (video) {
+      const source = window.matchMedia("(max-width: 560px)").matches
+        ? "/assets/hero-logo-motion-mobile.mp4"
+        : "/assets/hero-logo-motion.mp4";
+      fetch(source)
+        .then(response => {
+          if (!response.ok) throw new Error("Hero videosu yüklenemedi");
+          return response.blob();
+        })
+        .then(blob => {
+          if (!active || !videoRef.current) return;
+          blobUrl = URL.createObjectURL(blob);
+          videoRef.current.src = blobUrl;
+          videoRef.current.addEventListener("loadedmetadata", updateScroll, { once: true });
+          videoRef.current.load();
+        })
+        .catch(() => { /* Poster remains as a safe fallback. */ });
+    }
     updateScroll();
     window.addEventListener("scroll", updateScroll, { passive: true });
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", updateScroll);
       cancelAnimationFrame(frame);
+      active = false;
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
       root.classList.remove("js-motion");
     };
   }, []);
@@ -104,17 +125,10 @@ function LandingPage() {
       </nav>
     </header>
 
-    <section className="hero" ref={heroRef} aria-labelledby="hero-title">
+    <section className="hero" ref={heroRef} aria-label="GDG Ostim Tech">
       <div className="hero-sticky">
-        <div className="hero-copy"><h1 id="hero-title"><span className="hero-title-desktop">Teknolojiyi<br/>birlikte üretiyoruz.</span><span className="hero-title-mobile">Kodla. Paylaş.<br/>Birlikte büyüt.</span></h1>
-          <div className="hero-note"><p>Ankara'da öğrenen, paylaşan ve üreten geliştirici topluluğu.</p><a href="#events">Etkinlikleri keşfet <span aria-hidden="true">↓</span></a></div>
-        </div>
         <figure className="hero-motion" aria-label="GDG işaretinin üç boyutlu hareketi">
-          <video ref={videoRef} muted playsInline preload={motionEnabled ? "auto" : "none"} poster="/assets/hero-logo-poster.jpg">
-            {motionEnabled && <source src="/assets/hero-logo-motion-mobile.mp4" type="video/mp4" media="(max-width: 560px)" />}
-            {motionEnabled && <source src="/assets/hero-logo-motion.mp4" type="video/mp4" />}
-          </video>
-          <figcaption>Kaydırdıkça fikir parçaları bir araya gelir.</figcaption>
+          <video ref={videoRef} muted playsInline preload="none" poster="/assets/hero-logo-poster.jpg" />
         </figure>
       </div>
     </section>

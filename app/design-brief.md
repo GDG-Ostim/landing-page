@@ -38,7 +38,7 @@ Locked type: Space Grotesk display ve IBM Plex Mono metadata. Keskin, teknik ve 
 
 Corner language: 14px yumuşak köşeler yalnızca görsel ve etkinlik yüzeylerinde. Metin blokları ve navigasyon keskin kalır.
 
-Hero architecture: Scroll-scrubbed product stage. Masaüstünde solda güçlü başlık, sağda saf beyaz 3B logo filmi; mobilde film üstte ortada, kısa başlık altta.
+Hero architecture: Full-screen scroll-scrubbed film. Hero içinde metin, CTA, ek fotoğraf veya dekoratif katman yok; yalnızca saf beyaz 3B logo filmi bütün viewport'u kaplar.
 
 Section system: Swiss grid discipline with gallery-led cadence.
 
