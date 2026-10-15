@@ -55,7 +55,7 @@ compiles to `api/dist/`; the web output remains in `app/dist/client/`.
 CI installs from the root lockfile and validates both workspaces. It has no
 deployment step. Use the root `bun.lock`; do not create a separate workspace lockfile.
 
-## API contract (phase 1)
+## API contract
 
 | Method | Path | Result |
 | --- | --- | --- |
@@ -63,6 +63,16 @@ deployment step. Use the root `bun.lock`; do not create a separate workspace loc
 | POST | `/api/auth/login` | `{ username, password }` → session cookie and admin username |
 | POST | `/api/auth/logout` | Revokes session and clears cookie |
 | GET | `/api/admin/session` | Admin username or HTTP 401 |
+| GET | `/api/links` | Public `/links` cards in display order |
+| GET | `/api/admin/links` | Same list with positions (admin) |
+| POST | `/api/admin/links` | `{ title, url, icon, note }` → new card at the end |
+| PUT | `/api/admin/links/:id` | Replace a card's fields |
+| DELETE | `/api/admin/links/:id` | Remove a card; positions are renumbered |
+| POST | `/api/admin/links/:id/move` | `{ direction: "up" \| "down" }` swaps with the neighbour |
+
+Link addresses accept `https://`/`http://`, e-mail (stored as `mailto:`) or a same-site path
+such as `/`. Icons come from a fixed list shared by `api/src/links.ts` and `app/src/lib/social.tsx`.
+Schema changes are append-only entries in `api/src/database.ts`.
 
 Write requests require the exact `APP_ORIGIN` header. API responses use
 `Cache-Control: no-store`. Sessions have an absolute eight-hour expiry, use
@@ -106,5 +116,9 @@ in a restored backup should be revoked by running `admin:setup`.
 
 Phase 1: workspace setup, schema migrations, administrator bootstrap/login/logout,
 session protection, persistent storage, database + uploads backup and the
-mascot-led admin login/dashboard. Link CRUD, social
+mascot-led admin login/dashboard.
+
+Phase 2: `/links` cards are stored in SQLite (seeded with the previous cards) and
+managed from the panel's Links screen; the page prerenders the seed and then
+shows the live list from `/api/links`. Link CRUD, social
 settings and event management are deliberately left for their own phases.

@@ -234,7 +234,7 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}img,video{display:blo
 .link-btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--border)}
 .link-btn.red{--tone:var(--dragon);--tone-ledge:var(--dragon-shadow);background:var(--dragon);border-color:var(--dragon);box-shadow:0 4px 0 var(--dragon-shadow);color:#fff}
 .link-btn.red:active{box-shadow:0 0 0 var(--dragon-shadow)}
-.link-btn.green{--tone:#1DA851}
+.link-btn.green{--tone:#1DA851}.link-btn.instagram{--tone:#E1306C}.link-btn.linkedin{--tone:#0A66C2}.link-btn.mail{--tone:var(--dragon)}.link-btn.github{--tone:#24292F}.link-btn.youtube{--tone:#FF0000}.link-btn.yellow{--tone:#B98900}
 .link-icon{flex-shrink:0;width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:color-mix(in srgb,var(--tone) 12%,#fff);color:var(--tone)}
 .link-btn.red .link-icon{background:rgba(255,255,255,.18);color:#fff}
 .link-icon svg{width:20px;height:20px}

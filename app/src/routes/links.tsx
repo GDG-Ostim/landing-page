@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { asset } from "../lib/asset";
-import { Icon, SocialTiles, links, type IconName } from "../lib/social";
+import { LinkCard, SocialTiles, useCommunityLinks, type CommunityLink } from "../lib/social";
 
 export const Route = createFileRoute("/links")({
   head: () => ({
@@ -13,15 +13,19 @@ export const Route = createFileRoute("/links")({
   component: LinksPage,
 });
 
-function LinkButton({ href, icon, title, note, tone, external = true }: { href: string; icon: IconName; title: string; note: string; tone: string; external?: boolean }) {
-  return <a className={`link-btn ${tone}`} href={href} {...(external ? { target: "_blank", rel: "noreferrer" } : {})}>
-    <span className="link-icon"><Icon name={icon} /></span>
-    <span className="link-text"><b>{title}</b><small>{note}</small></span>
-    <span className="link-go"><Icon name="arrow" /></span>
-  </a>;
+/** Consecutive WhatsApp cards share one green box, as the page was designed. */
+function groupLinks(items: CommunityLink[]) {
+  const groups: CommunityLink[][] = [];
+  for (const link of items) {
+    const last = groups.at(-1);
+    if (link.icon === "whatsapp" && last?.[0].icon === "whatsapp") last.push(link);
+    else groups.push([link]);
+  }
+  return groups;
 }
 
 function LinksPage() {
+  const groups = groupLinks(useCommunityLinks());
   return <main className="links-page">
     <header className="links-head">
       <a className="links-logo" href="/" aria-label="GDG Ostim Tech ana sayfa">
@@ -39,12 +43,12 @@ function LinksPage() {
         <img src={asset("/assets/links-mascot.webp")} alt="" width="420" height="543" />
       </picture>
       <section className="links-card" aria-label="Topluluk linkleri">
-        <LinkButton href={links.join} icon="users" tone="red" title="Bize katılmayı unutmayın!" note="GDG Community'de üye ol, etkinlik duyurularını al" />
-        <div className="links-group">
-          <p>WhatsApp topluluklarımız · <b>sadece birine katılman yeterli</b></p>
-          {links.whatsapp.map(group => <LinkButton href={group.href} icon="whatsapp" tone="green" title={group.label} note="WhatsApp topluluğu · ücretsiz" key={group.href} />)}
-        </div>
-        <LinkButton href="/" icon="world" tone="blue" title="Web sitemiz" note="gdgostimtech.com" external={false} />
+        {groups.map(group => group.length > 1
+          ? <div className="links-group" key={group[0].id}>
+              <p>WhatsApp topluluklarımız · <b>sadece birine katılman yeterli</b></p>
+              {group.map(link => <LinkCard link={link} key={link.id} />)}
+            </div>
+          : <LinkCard link={group[0]} key={group[0].id} />)}
       </section>
     </div>
 

@@ -1,61 +1,14 @@
-import { test, type TestContext } from "node:test";
+import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { once } from "node:events";
 import Database from "better-sqlite3";
-import { createApp } from "../src/app.js";
-import { openDatabase } from "../src/database.js";
 import { hashPassword, setAdmin, tokenHash, verifyPassword } from "../src/auth.js";
-import { readConfig, type Config } from "../src/config.js";
+import { readConfig } from "../src/config.js";
+import { cookie, fixture, origin, password } from "./fixture.js";
 import { backupData } from "../src/backup.js";
-
-const password = "test-only-password-123";
-const origin = "http://127.0.0.1:5173";
-
-async function fixture(t: TestContext, production = false) {
-  const directory = await mkdtemp(join(tmpdir(), "gdg-api-test-"));
-  let db = openDatabase(directory);
-  let time = Date.now();
-  const config: Config = { dataDir: directory, origin: production ? "https://gdg.example" : origin, port: 3001, production, trustProxy: false };
-  await setAdmin(db, "admin", password);
-  const listen = async () => {
-    const server = createApp(db, config, () => time).listen(0, "127.0.0.1");
-    await once(server, "listening");
-    return server;
-  };
-  let server = await listen();
-  const closeServer = () => new Promise<void>((done, reject) => server.close(error => error ? reject(error) : done()));
-  const call = (path: string, options: RequestInit = {}) => {
-    const address = server.address();
-    assert.ok(address && typeof address === "object");
-    return fetch(`http://127.0.0.1:${address.port}${path}`, options);
-  };
-  const login = (body: object = { username: "admin", password }, cookie?: string) => call("/api/auth/login", {
-    method: "POST", headers: { Origin: config.origin, "Content-Type": "application/json", ...(cookie ? { Cookie: cookie } : {}) }, body: JSON.stringify(body),
-  });
-  t.after(async () => {
-    await closeServer();
-    db.close();
-    const target = resolve(directory);
-    assert.ok(target.startsWith(resolve(tmpdir()) + "/gdg-api-test-") || target.startsWith(resolve(tmpdir()) + "\\gdg-api-test-"));
-    await rm(target, { recursive: true, force: true });
-  });
-  return {
-    directory, config, call, login,
-    get db() { return db; },
-    advance(ms: number) { time += ms; },
-    async restart() { await closeServer(); db.close(); db = openDatabase(directory); server = await listen(); },
-  };
-}
-
-function cookie(response: Response) {
-  const value = response.headers.get("set-cookie");
-  assert.ok(value);
-  return value.split(";")[0];
-}
 
 test("password hashes are salted, verify correctly and reject invalid setup input", async () => {
   const first = await hashPassword(password);
@@ -120,7 +73,7 @@ test("sessions and migrations survive reopen; expired sessions stop working", as
   const auth = cookie(await f.login());
   await f.restart();
   assert.equal((await f.call("/api/admin/session", { headers: { Cookie: auth } })).status, 200);
-  assert.deepEqual(f.db.prepare("SELECT version FROM migrations").all(), [{ version: 1 }]);
+  assert.deepEqual(f.db.prepare("SELECT version FROM migrations ORDER BY version").all(), [{ version: 1 }, { version: 2 }]);
   f.advance(8 * 60 * 60 * 1000 + 1);
   assert.equal((await f.call("/api/admin/session", { headers: { Cookie: auth } })).status, 401);
 });
