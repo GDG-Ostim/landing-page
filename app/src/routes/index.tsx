@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { asset } from "../lib/asset";
+import { Icon, SocialTiles, links } from "../lib/social";
 
 export const Route = createFileRoute("/")({ component: LandingPage });
 
@@ -110,6 +111,7 @@ function LandingPage() {
           <a href="#about" onClick={() => setMenuOpen(false)}>Hakkımızda</a>
           <a href="#events" onClick={() => setMenuOpen(false)}>Etkinlikler</a>
           <a href="#team" onClick={() => setMenuOpen(false)}>Ekip</a>
+          <SocialTiles className="nav-social" />
           <a className="btn btn-sm" href="#join" onClick={() => setMenuOpen(false)}>Katıl</a>
         </nav>
       </div>
@@ -167,7 +169,7 @@ function LandingPage() {
           <div className="event-body"><time>{event.date}</time><h3>{event.title}</h3><p>{event.type} · {event.place}</p></div>
         </article>)}
       </div>
-      <div className="events-cta"><a className="btn btn-blue" href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">Duyuruları takip et</a></div>
+      <div className="events-cta"><a className="btn btn-blue" href={links.linkedin} target="_blank" rel="noreferrer">Duyuruları takip et</a></div>
     </section>
 
     <section className="team" id="team" aria-labelledby="team-title">
@@ -192,7 +194,10 @@ function LandingPage() {
       <div className="join-inner" data-reveal="up">
         <h2 id="join-title">Sıradaki fikre <em>birlikte</em> başlayalım.</h2>
         <p>Yeni insanlarla tanış, öğrendiklerini paylaş ve üretim ekibine katıl.</p>
-        <a className="btn" href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">Topluluğa katıl</a>
+        <div className="join-actions">
+          <a className="btn" href={links.join} target="_blank" rel="noreferrer">Topluluğa katıl</a>
+          <a className="btn btn-secondary" href="/links">Tüm linkler</a>
+        </div>
       </div>
       <div className="join-art"><LoopArt name="join-cheer" /></div>
       <svg className="join-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 64C180 104 360 112 540 84S900 8 1080 20s300 60 360 72V120H0Z" /></svg>
@@ -209,7 +214,7 @@ function LandingPage() {
             <p>OSTİM Teknik Üniversitesi'nde öğrenen, paylaşan ve üreten geliştiricilerin topluluğu.</p>
           </div>
           <nav aria-label="Alt menü"><p className="footer-label">Topluluk</p><a href="#about">Hakkımızda</a><a href="#events">Etkinlikler</a><a href="#team">Ekip</a><a href="#join">Katıl</a></nav>
-          <div><p className="footer-label">Takip et</p><a href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">LinkedIn ↗</a></div>
+          <div><p className="footer-label">Takip et</p><SocialTiles className="footer-social" /><a href={links.whatsapp[0].href} target="_blank" rel="noreferrer"><Icon name="whatsapp" />WhatsApp topluluğu</a><a href="/links"><Icon name="arrow" />Tüm linkler</a></div>
         </div>
         <div className="footer-bottom"><span>© 2026 GDG Ostim Tech</span><span>Ankara, Türkiye</span></div>
       </div>
