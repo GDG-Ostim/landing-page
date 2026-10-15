@@ -13,7 +13,7 @@ function buildHead(meta: AppMeta) {
   const title = meta.og_title ?? "GDG Ostim Tech";
   const description = meta.og_description ?? "Ankara'da öğrenen, paylaşan ve üreten geliştirici topluluğu.";
   return {
-    meta: [{ charSet:"utf-8" }, { name:"viewport", content:"width=device-width, initial-scale=1" }, { name:"theme-color", content:"#F8F9FA" }, { title }, { name:"description", content:description }, { property:"og:title", content:title }, { property:"og:description", content:description }, { property:"og:type", content:"website" }, { property:"og:url", content:"https://gdg-ostim-tech.higgsfield.app/" }, { name:"twitter:card", content:"summary_large_image" }, ...(meta.og_image_url ? [{ property:"og:image", content:meta.og_image_url }, { name:"twitter:image", content:meta.og_image_url }] : [])],
+    meta: [{ charSet:"utf-8" }, { name:"viewport", content:"width=device-width, initial-scale=1" }, { name:"theme-color", content:"#FFFFFF" }, { title }, { name:"description", content:description }, { property:"og:title", content:title }, { property:"og:description", content:description }, { property:"og:type", content:"website" }, { property:"og:url", content:"https://gdg-ostim-tech.higgsfield.app/" }, { name:"twitter:card", content:"summary_large_image" }, ...(meta.og_image_url ? [{ property:"og:image", content:meta.og_image_url }, { name:"twitter:image", content:meta.og_image_url }] : [])],
     links: [{ rel:"stylesheet", href:appCss }, { rel:"icon", href:"/assets/favicon.ico" }, { rel:"apple-touch-icon", href:"/assets/apple-touch-icon.png" }, { rel:"manifest", href:"/site.webmanifest" }],
   };
 }

@@ -4,21 +4,30 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 export const Route = createFileRoute("/")({ component: LandingPage });
 
 const events = [
-  { color: "blue", date: "06-08 Ekim 2026", title: "Kulüp Tanıtım Günleri", type: "Topluluk buluşması", place: "OSTİM Teknik Üniversitesi" },
-  { color: "red", date: "04-05 Nisan 2026", title: "GDG On Campus Hackathon", type: "48 saatlik hackathon", place: "OSTİM Teknik Üniversitesi" },
-  { color: "yellow", date: "24 Şubat 2026", title: "Engineerium '26", type: "Mühendislik zirvesi", place: "Konferans Salonu" },
+  { id: "intro", color: "blue", date: "06-08 Ekim 2026", title: "Kulüp Tanıtım Günleri", type: "Topluluk buluşması", place: "OSTİM Teknik Üniversitesi" },
+  { id: "hackathon", color: "red", date: "04-05 Nisan 2026", title: "GDG On Campus Hackathon", type: "48 saatlik hackathon", place: "OSTİM Teknik Üniversitesi" },
+  { id: "summit", color: "yellow", date: "24 Şubat 2026", title: "Engineerium '26", type: "Mühendislik zirvesi", place: "Konferans Salonu" },
 ];
-const team = [
-  { initials: "EY", name: "Ezel Yazıcı", role: "Kampüs Elçisi", color: "blue" },
-  { initials: "MA", name: "Mehmet Ali İlhan", role: "Eş Lider", color: "red" },
-  { initials: "YA", name: "Yusuf Türker Albayrak", role: "Teknik Koordinatör", color: "green" },
-  { initials: "HA", name: "Hilal Akdağ", role: "Sosyal Medya ve Tasarım Lideri", color: "yellow" },
-  { initials: "EG", name: "Emir Güzel", role: "Partnerlik Lideri", color: "blue" },
-  { initials: "CC", name: "Ceyda Cesur", role: "Organizatör", color: "red" },
-  { initials: "FO", name: "Fatih Tuğra Odabaş", role: "Organizasyon Koordinasyonu", color: "green" },
-  { initials: "YK", name: "Yakup Kırdudu", role: "Ekip Üyesi", color: "yellow" },
-  { initials: "HF", name: "Haya Firas", role: "Sosyal Medya ve Tasarım", color: "blue" },
-  { initials: "KA", name: "Karya Elif Aksu", role: "Core Team", color: "red" },
+const about = [
+  { id: "open", title: "Herkese açık, tamamen ücretsiz.", text: "Bölümün, sınıfın ya da deneyimin fark etmez. Etkinliklerimiz teknolojiye merak duyan herkese açık ve ücretsiz." },
+  { id: "learn", title: "Birlikte öğren.", text: "Workshop'lar, çalışma grupları ve eğitim serileriyle Android'den yapay zekâya, web'den buluta yeni şeyler öğren." },
+  { id: "share", title: "Açıkça paylaş.", text: "Öğrendiğini anlat, konuşma yap, deneyimini toplulukla paylaş. Her sunum bir sonraki kişiye ilham olur." },
+  { id: "build", title: "Birlikte üret.", text: "Hackathon'larda ve proje ekiplerinde fikrini takımla buluştur, çalışan bir ürüne dönüştür." },
+];
+const tracks = ["Android", "Flutter", "Web", "Cloud", "Yapay Zekâ", "Firebase", "UI/UX", "Oyun Geliştirme"];
+const chipColors = ["blue", "red", "yellow", "green"];
+const stickers = ["phone", "browser", "cloud", "ai", "game", "palette"];
+// `avatar` is the member's mascot-style portrait (public/assets/team/*.webp); until then the card shows initials.
+const team: { initials: string; name: string; role: string; color: string; avatar?: string }[] = [
+  { initials: "EY", name: "Ezel Yazıcı", role: "Topluluk Başkanı", color: "blue", avatar: "/assets/team/ezel.webp" },
+  { initials: "PA", name: "Poyraz Avsever", role: "Teknoloji Komitesi Başkanı", color: "green", avatar: "/assets/team/poyraz.webp" },
+  { initials: "YA", name: "Yusuf Türker Albayrak", role: "Teknoloji Komitesi Başkan Yardımcısı", color: "green", avatar: "/assets/team/yusuf.webp" },
+  { initials: "HA", name: "Hilal Akdağ", role: "Sosyal Medya", color: "yellow", avatar: "/assets/team/hilal.webp" },
+  { initials: "BK", name: "Begüm Kocabıçakoğlu", role: "Sosyal Medya", color: "yellow", avatar: "/assets/team/begum.webp" },
+  { initials: "EG", name: "Emir Güzel", role: "Partnerlik Lideri", color: "blue", avatar: "/assets/team/emir.webp" },
+  { initials: "FO", name: "Fatih Tuğra Odabaş", role: "Organizasyon", color: "red", avatar: "/assets/team/fatih.webp" },
+  // TODO: real name pending from the team
+  { initials: "İS", name: "İsim Soyisim", role: "Ekip Üyesi", color: "green", avatar: "/assets/team/isimsiz.webp" },
 ];
 
 function Logo() {
@@ -28,14 +37,32 @@ function Logo() {
   </a>;
 }
 
-function PrincipleIcon({ type }: { type: "learn" | "share" | "build" }) {
-  if (type === "learn") return <svg viewBox="0 0 56 56" aria-hidden="true"><path className="icon-blue" d="M7 12c8-2 15 0 21 5v29c-6-5-13-7-21-5Z"/><path className="icon-red" d="M49 12c-8-2-15 0-21 5v29c6-5 13-7 21-5Z"/><path d="M19 25l-5 4 5 4M37 25l5 4-5 4"/><path className="icon-yellow" d="M31 22l-6 14"/></svg>;
-  if (type === "share") return <svg viewBox="0 0 56 56" aria-hidden="true"><path d="M16 18l23 10-23 10M39 28H26"/><circle className="icon-blue" cx="14" cy="18" r="6"/><circle className="icon-green" cx="42" cy="28" r="6"/><circle className="icon-red" cx="14" cy="39" r="6"/></svg>;
-  return <svg viewBox="0 0 56 56" aria-hidden="true"><path className="icon-yellow" d="M28 6 47 17 28 28 9 17Z"/><path className="icon-blue" d="M9 17v22l19 11V28Z"/><path className="icon-green" d="M47 17v22L28 50V28Z"/><path d="M18 22v10l10 6 10-6V22"/></svg>;
+/** Short mascot loop that only plays while on screen; a still for reduced motion. */
+function LoopArt({ name }: { name: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [still, setStill] = useState(false);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setStill(true); return; }
+    const video = ref.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) void video.play().catch(() => {});
+      else video.pause();
+    }, { threshold: 0.25 });
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+  return <div className="loop-art">
+    {still
+      ? <img src={`/assets/${name}.webp`} alt="" width="720" height="720" loading="lazy" />
+      : <video ref={ref} muted loop playsInline preload="none" poster={`/assets/${name}.webp`} aria-hidden="true">
+          <source src={`/assets/${name}.webm`} type="video/webm" />
+          <source src={`/assets/${name}.mp4`} type="video/mp4" />
+        </video>}
+  </div>;
 }
 
 function LandingPage() {
-  const railRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -73,7 +100,6 @@ function LandingPage() {
       root.classList.remove("js-motion");
     };
   }, []);
-  const moveRail = (direction: number) => railRef.current?.scrollBy({ left: direction * 420, behavior: "smooth" });
 
   return <main id="top">
     <header className={`topbar${scrolled ? " is-scrolled" : ""}`}>
@@ -110,59 +136,84 @@ function LandingPage() {
       </div>
     </section>
 
-    <section className="about-section section-shell" id="about" aria-labelledby="about-title">
-      <div className="parenthesis" aria-hidden="true">(</div><div className="about-content"><p className="section-index">GDG OSTIM TECH</p>
-        <h2 id="about-title" data-reveal="up">Merakın buluştuğu yer.</h2>
-        <p className="about-lead" data-reveal="up">Teknolojiye ilgi duyan insanları bir araya getiriyor, deneyimi açıkça paylaşıyor ve fikirleri birlikte çalışan projelere dönüştürüyoruz.</p>
-        <div className="principles">
-          <article data-reveal="left"><span className="principle-icon"><PrincipleIcon type="learn" /></span><h3>Birlikte öğren</h3><p>Workshop, konuşma ve çalışma gruplarıyla bilgiyi çoğalt.</p></article>
-          <article data-reveal="right"><span className="principle-icon"><PrincipleIcon type="share" /></span><h3>Açıkça paylaş</h3><p>Deneyimini topluluğa aktar, yeni bakış açılarıyla karşılaş.</p></article>
-          <article data-reveal="left"><span className="principle-icon"><PrincipleIcon type="build" /></span><h3>Birlikte üret</h3><p>Fikrini ekiple buluştur, çalışan bir ürüne dönüştür.</p></article>
-        </div>
-      </div><div className="parenthesis parenthesis-right" aria-hidden="true">)</div>
+    <section className="about" id="about" aria-labelledby="about-title">
+      <h2 id="about-title" className="sr-only">Hakkımızda</h2>
+      {about.map(item => <article className="about-row" data-reveal="up" key={item.id}>
+        <LoopArt name={`about-${item.id}`} />
+        <div className="about-copy"><h3>{item.title}</h3><p>{item.text}</p></div>
+      </article>)}
     </section>
 
-    <section className="manifesto section-shell" aria-labelledby="manifesto-title">
-      <div className="manifesto-copy"><h2 id="manifesto-title"><span data-reveal="left">Öğren.</span><span data-reveal="right">Paylaş.</span><span data-reveal="left">Birlikte üret.</span></h2><p data-reveal="up">Farklı disiplinlerden gelen insanların aynı masa etrafında buluştuğu açık bir üretim kültürü.</p></div>
-      <div className="signal-map" aria-label="Topluluk yaklaşımı">
-        {[["Öğren","Bilgiyi erişilebilir kıl","blue"],["Paylaş","Deneyimi dolaşıma sok","red"],["Üret","Fikirleri birlikte dene","yellow"],["Etki","Yerelden geleceğe bağlan","green"]].map(([title,text,color],index) =>
-          <div className={`signal-row ${color}`} data-reveal="right" style={{ "--delay": `${index * 85}ms` } as CSSProperties} key={title}><span>0{index+1}</span><strong>{title}</strong><p>{text}</p><i aria-hidden="true" /></div>
-        )}
+    <section className="tracks" aria-labelledby="tracks-title">
+      {stickers.map(name => <img className={`sticker sticker-${name}`} src={`/assets/sticker-${name}.webp`} alt="" aria-hidden="true" width="320" height="320" loading="lazy" key={name} />)}
+      <div className="tracks-inner" data-reveal="up">
+        <div className="tracks-mascot"><LoopArt name="tracks-fly" /></div>
+        <h2 id="tracks-title">Hangi alanda üretmek istersen.</h2>
+        <p>Mobilden buluta, yapay zekâdan tasarıma; her alandan insanla aynı masada buluş.</p>
+        <ul className="track-chips" aria-label="Çalışma alanları">
+          {tracks.map((track, index) => <li className={chipColors[index % chipColors.length]} key={track}>{track}</li>)}
+        </ul>
       </div>
     </section>
 
-    <section className="events-section section-shell" id="events" aria-labelledby="events-title">
-      <div className="events-head" data-reveal="up"><div><p className="section-index">SON ETKİNLİKLER</p><h2 id="events-title">Birlikte öğrenmenin takvimi.</h2></div>
-        <div className="rail-controls" aria-label="Etkinlik kartlarını kaydır"><button type="button" onClick={() => moveRail(-1)} aria-label="Önceki etkinlik">←</button><button type="button" onClick={() => moveRail(1)} aria-label="Sonraki etkinlik">→</button></div>
+    <section className="events" id="events" aria-labelledby="events-title">
+      <div className="events-head" data-reveal="up">
+        <h2 id="events-title">Birlikte öğrenmenin takvimi.</h2>
+        <p>Son etkinliklerimizden birkaçı. Sıradakini kaçırmamak için duyurularımızı takip et.</p>
       </div>
-      <div className="events-rail" ref={railRef}>
-        {events.map((event,index) => <article className={`event-card ${event.color}`} data-reveal="up" style={{ "--delay": `${index * 110}ms` } as CSSProperties} key={event.title}>
-          <div className="event-art"><span>{String(index+1).padStart(2,"0")}</span><div className="event-building" /></div>
-          <div className="event-info"><time>{event.date}</time><h3>{event.title}</h3><p>{event.type}</p><span>{event.place}</span></div>
+      <div className="events-grid">
+        {events.map((event, index) => <article className={`event ${event.color}`} data-reveal="up" style={{ "--delay": `${index * 90}ms` } as CSSProperties} key={event.id}>
+          <div className="event-cover"><img src={`/assets/event-${event.id}.webp`} alt="" width="640" height="440" loading="lazy" /></div>
+          <div className="event-body"><time>{event.date}</time><h3>{event.title}</h3><p>{event.type} · {event.place}</p></div>
         </article>)}
-        <a className="event-follow" href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer"><span>Duyuruları LinkedIn'de takip et</span><b>↗</b></a>
+      </div>
+      <div className="events-cta"><a className="btn btn-blue" href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">Duyuruları takip et</a></div>
+    </section>
+
+    <section className="team" id="team" aria-labelledby="team-title">
+      <div className="team-head" data-reveal="up">
+        <h2 id="team-title">Bu topluluğu birlikte büyütüyoruz.</h2>
+        <p>Etkinlikten içeriğe, her buluşmanın arkasında gönüllü bir ekip var.</p>
+      </div>
+      <div className="team-grid">
+        {team.map((member, index) => <article className={`member ${member.color}`} data-reveal="up" style={{ "--delay": `${(index % 5) * 60}ms` } as CSSProperties} key={member.name}>
+          <div className="member-avatar">
+            {member.avatar
+              ? <img src={member.avatar} alt="" width="320" height="320" loading="lazy" />
+              : <span aria-hidden="true">{member.initials}</span>}
+          </div>
+          <h3>{member.name}</h3>
+          <p>{member.role}</p>
+        </article>)}
       </div>
     </section>
 
-    <section className="team-section section-shell" id="team" aria-labelledby="team-title">
-      <div className="team-intro" data-reveal="up"><p className="section-index">EKİP / 10</p><h2 id="team-title">Bu topluluğu birlikte büyütüyoruz.</h2><p>Etkinlikten içeriğe, her buluşmanın arkasında gönüllü bir ekip var.</p></div>
-      <div className="team-grid">{team.map((member,index) => <article className={`team-card ${member.color}`} data-reveal="up" style={{ "--delay": `${(index % 3) * 70}ms` } as CSSProperties} key={member.name}>
-        <div className="member-visual"><span>{member.initials}</span><i>{String(index+1).padStart(2,"0")}</i></div><h3>{member.name}</h3><p>{member.role}</p>
-      </article>)}</div>
-    </section>
-
-    <section className="join-section" id="join" aria-labelledby="join-title"><div className="join-wire wire-a" /><div className="join-wire wire-b" /><div className="join-wire wire-c" /><div className="join-wire wire-d" />
-      <div className="join-inner"><h2 id="join-title" data-reveal="up">Sıradaki fikre birlikte başlayalım.</h2><p data-reveal="up">Yeni insanlarla tanış, öğrendiklerini paylaş ve üretim ekibine katıl.</p>
-        <a className="join-link" href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer"><span>Topluluğa katıl</span><b aria-hidden="true">↗</b></a>
+    <section className="join" id="join" aria-labelledby="join-title">
+      <div className="join-inner" data-reveal="up">
+        <h2 id="join-title">Sıradaki fikre <em>birlikte</em> başlayalım.</h2>
+        <p>Yeni insanlarla tanış, öğrendiklerini paylaş ve üretim ekibine katıl.</p>
+        <a className="btn" href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">Topluluğa katıl</a>
       </div>
+      <div className="join-art"><LoopArt name="join-cheer" /></div>
+      <svg className="join-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 64C180 104 360 112 540 84S900 8 1080 20s300 60 360 72V120H0Z" /></svg>
     </section>
-    <footer>
-      <a className="sponsor" href="https://veriteknik.com" target="_blank" rel="noopener" aria-label="Sponsorumuz VeriTeknik — veriteknik.com">
-        <div className="sponsor-copy"><p className="sponsor-label">Sponsorumuz</p><p className="sponsor-text">Topluluğumuzu destekleyen VeriTeknik'e teşekkür ederiz.</p></div>
-        <span className="sponsor-logo"><img src="/assets/veriteknik-logo.png" alt="VeriTeknik" width="720" height="161" loading="lazy" /><i aria-hidden="true">↗</i></span>
-      </a>
-      <div className="footer-main"><Logo /><div className="footer-links"><a href="#about">Hakkımızda</a><a href="#events">Etkinlikler</a><a href="#team">Ekip</a><a href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">LinkedIn ↗</a></div></div>
-      <div className="footer-bottom"><span>© 2026 GDG Ostim Tech</span><span>Ankara, Türkiye</span></div><div className="color-rule" aria-hidden="true"><i /><i /><i /><i /></div>
+    <footer className="footer">
+      <div className="footer-inner">
+        <a className="sponsor" href="https://veriteknik.com" target="_blank" rel="noopener" aria-label="Sponsorumuz VeriTeknik — veriteknik.com">
+          <div><p className="footer-label">Sponsorumuz</p><p className="sponsor-text">Topluluğumuzu destekleyen VeriTeknik'e teşekkür ederiz.</p></div>
+          <span className="sponsor-logo"><img src="/assets/veriteknik-logo.png" alt="VeriTeknik" width="720" height="161" loading="lazy" /><i aria-hidden="true">↗</i></span>
+        </a>
+        <div className="footer-cols">
+          <div className="footer-brand">
+            <a className="footer-logo" href="#top" aria-label="GDG Ostim Tech ana sayfa"><img src="/assets/gdg-mark-exact.png" alt="" width="70" height="70" /><span>Ostim Tech<small>Google Developer Group</small></span></a>
+            <p>OSTİM Teknik Üniversitesi'nde öğrenen, paylaşan ve üreten geliştiricilerin topluluğu.</p>
+          </div>
+          <nav aria-label="Alt menü"><p className="footer-label">Topluluk</p><a href="#about">Hakkımızda</a><a href="#events">Etkinlikler</a><a href="#team">Ekip</a><a href="#join">Katıl</a></nav>
+          <div><p className="footer-label">Takip et</p><a href="https://tr.linkedin.com/company/ostimtech-gdsc" target="_blank" rel="noreferrer">LinkedIn ↗</a></div>
+        </div>
+        <div className="footer-bottom"><span>© 2026 GDG Ostim Tech</span><span>Ankara, Türkiye</span></div>
+      </div>
+      <div className="color-rule" aria-hidden="true"><i /><i /><i /><i /></div>
     </footer>
   </main>;
 }
