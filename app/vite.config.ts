@@ -75,6 +75,11 @@ export default defineConfig(({ mode, command }) => {
       // inside effects/handlers, or guarded with `typeof window !== "undefined"`.
       tanstackStart({
         server: { entry: "server" },
+        // STATIC_EXPORT=1 renders the landing page to plain HTML for hosting on
+        // our own nginx box (gdgostimtech.com) instead of the Workers platform.
+        ...(process.env.STATIC_EXPORT === "1"
+          ? { pages: [{ path: "/" }], prerender: { enabled: true, crawlLinks: false, autoStaticPathsDiscovery: false } }
+          : {}),
       }),
       higgsfieldDesignInspectorVitePlugin(designInspectorEnabled),
       react({

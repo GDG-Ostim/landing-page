@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { asset } from "../lib/asset";
 
 export const Route = createFileRoute("/")({ component: LandingPage });
 
@@ -32,7 +33,7 @@ const team: { initials: string; name: string; role: string; color: string; avata
 
 function Logo() {
   return <a className="logo" href="#top" aria-label="GDG Ostim Tech ana sayfa">
-    <img src="/assets/gdg-mark-exact.png" alt="" width="70" height="70" />
+    <img src={asset("/assets/gdg-mark-exact.png")} alt="" width="70" height="70" />
     <span>Ostim Tech<small>Google Developer Group</small></span>
   </a>;
 }
@@ -54,10 +55,10 @@ function LoopArt({ name }: { name: string }) {
   }, []);
   return <div className="loop-art">
     {still
-      ? <img src={`/assets/${name}.webp`} alt="" width="720" height="720" loading="lazy" />
-      : <video ref={ref} muted loop playsInline preload="none" poster={`/assets/${name}.webp`} aria-hidden="true">
-          <source src={`/assets/${name}.webm`} type="video/webm" />
-          <source src={`/assets/${name}.mp4`} type="video/mp4" />
+      ? <img src={asset(`/assets/${name}.webp`)} alt="" width="720" height="720" loading="lazy" />
+      : <video ref={ref} muted loop playsInline preload="none" poster={asset(`/assets/${name}.webp`)} aria-hidden="true">
+          <source src={asset(`/assets/${name}.webm`)} type="video/webm" />
+          <source src={asset(`/assets/${name}.mp4`)} type="video/mp4" />
         </video>}
   </div>;
 }
@@ -119,10 +120,10 @@ function LandingPage() {
       <div className="hero-inner">
         <div className="hero-art">
           {reduceMotion
-            ? <img src="/assets/hero-dragon.webp" alt="" width="960" height="960" />
-            : <video autoPlay muted loop playsInline preload="auto" poster="/assets/hero-dragon.webp" aria-hidden="true">
-                <source src="/assets/hero-dragon.webm" type="video/webm" />
-                <source src="/assets/hero-dragon.mp4" type="video/mp4" />
+            ? <img src={asset("/assets/hero-dragon.webp")} alt="" width="960" height="960" />
+            : <video autoPlay muted loop playsInline preload="auto" poster={asset("/assets/hero-dragon.webp")} aria-hidden="true">
+                <source src={asset("/assets/hero-dragon.webm")} type="video/webm" />
+                <source src={asset("/assets/hero-dragon.mp4")} type="video/mp4" />
               </video>}
         </div>
         <div className="hero-copy">
@@ -145,7 +146,7 @@ function LandingPage() {
     </section>
 
     <section className="tracks" aria-labelledby="tracks-title">
-      {stickers.map(name => <img className={`sticker sticker-${name}`} src={`/assets/sticker-${name}.webp`} alt="" aria-hidden="true" width="320" height="320" loading="lazy" key={name} />)}
+      {stickers.map(name => <img className={`sticker sticker-${name}`} src={asset(`/assets/sticker-${name}.webp`)} alt="" aria-hidden="true" width="320" height="320" loading="lazy" key={name} />)}
       <div className="tracks-inner" data-reveal="up">
         <div className="tracks-mascot"><LoopArt name="tracks-fly" /></div>
         <h2 id="tracks-title">Hangi alanda üretmek istersen.</h2>
@@ -163,7 +164,7 @@ function LandingPage() {
       </div>
       <div className="events-grid">
         {events.map((event, index) => <article className={`event ${event.color}`} data-reveal="up" style={{ "--delay": `${index * 90}ms` } as CSSProperties} key={event.id}>
-          <div className="event-cover"><img src={`/assets/event-${event.id}.webp`} alt="" width="640" height="440" loading="lazy" /></div>
+          <div className="event-cover"><img src={asset(`/assets/event-${event.id}.webp`)} alt="" width="640" height="440" loading="lazy" /></div>
           <div className="event-body"><time>{event.date}</time><h3>{event.title}</h3><p>{event.type} · {event.place}</p></div>
         </article>)}
       </div>
@@ -179,7 +180,7 @@ function LandingPage() {
         {team.map((member, index) => <article className={`member ${member.color}`} data-reveal="up" style={{ "--delay": `${(index % 5) * 60}ms` } as CSSProperties} key={member.name}>
           <div className="member-avatar">
             {member.avatar
-              ? <img src={member.avatar} alt="" width="320" height="320" loading="lazy" />
+              ? <img src={asset(member.avatar)} alt="" width="320" height="320" loading="lazy" />
               : <span aria-hidden="true">{member.initials}</span>}
           </div>
           <h3>{member.name}</h3>
@@ -201,11 +202,11 @@ function LandingPage() {
       <div className="footer-inner">
         <a className="sponsor" href="https://veriteknik.com" target="_blank" rel="noopener" aria-label="Sponsorumuz VeriTeknik — veriteknik.com">
           <div><p className="footer-label">Sponsorumuz</p><p className="sponsor-text">Topluluğumuzu destekleyen VeriTeknik'e teşekkür ederiz.</p></div>
-          <span className="sponsor-logo"><img src="/assets/veriteknik-logo.png" alt="VeriTeknik" width="720" height="161" loading="lazy" /><i aria-hidden="true">↗</i></span>
+          <span className="sponsor-logo"><img src={asset("/assets/veriteknik-logo.png")} alt="VeriTeknik" width="720" height="161" loading="lazy" /><i aria-hidden="true">↗</i></span>
         </a>
         <div className="footer-cols">
           <div className="footer-brand">
-            <a className="footer-logo" href="#top" aria-label="GDG Ostim Tech ana sayfa"><img src="/assets/gdg-mark-exact.png" alt="" width="70" height="70" /><span>Ostim Tech<small>Google Developer Group</small></span></a>
+            <a className="footer-logo" href="#top" aria-label="GDG Ostim Tech ana sayfa"><img src={asset("/assets/gdg-mark-exact.png")} alt="" width="70" height="70" /><span>Ostim Tech<small>Google Developer Group</small></span></a>
             <p>OSTİM Teknik Üniversitesi'nde öğrenen, paylaşan ve üreten geliştiricilerin topluluğu.</p>
           </div>
           <nav aria-label="Alt menü"><p className="footer-label">Topluluk</p><a href="#about">Hakkımızda</a><a href="#events">Etkinlikler</a><a href="#team">Ekip</a><a href="#join">Katıl</a></nav>
