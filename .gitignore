@@ -4,3 +4,15 @@ node_modules
 
 # Raw Higgsfield generations (final assets live in app/public/assets)
 refs/gen/
+
+# Local runtime state and credentials (never publish these).
+.data/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+api/dist/
+deploy/ready/

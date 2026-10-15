@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitest/config'
+import { fileURLToPath } from 'node:url'
+import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
   test: {
@@ -18,6 +20,14 @@ export default defineConfig({
         },
       },
       {
+        // Match the web app's public-registry icon replacement in component tests.
+        plugins: [svgr({ svgrOptions: { icon: true, svgProps: { fill: 'currentColor' } } })],
+        resolve: {
+          alias: [{
+            find: /^@higgsfield-ai\/icons(\/.*)?$/,
+            replacement: fileURLToPath(new URL('../../src/lib/quanta-material-icons.ts', import.meta.url)),
+          }],
+        },
         test: {
           name: 'components',
           environment: 'happy-dom',

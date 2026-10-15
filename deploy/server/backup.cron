@@ -1,0 +1,3 @@
+# /etc/cron.d/gdg-api-backup — nightly online backup of database + uploads.
+# Copy /var/lib/gdg-landing/backups off-server as well.
+15 3 * * * gdg-api cd /opt/gdg-api/current && NODE_ENV=production APP_ORIGIN=https://gdgostimtech.com DATA_DIR=/var/lib/gdg-landing /usr/bin/node dist/backup.js >> /var/lib/gdg-landing/backups/backup.log 2>&1

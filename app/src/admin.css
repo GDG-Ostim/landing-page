@@ -1,0 +1,121 @@
+/* ---------- /admin ----------
+   Same language as the landing page: white cards on a ledge, Baloo 2 headings,
+   3D .btn buttons from styles.css and the dragon mascot reacting to the form. */
+.admin-page{min-height:100svh;padding:16px 16px 28px;background:#EAF3FF;color:var(--text)}
+
+.admin-brand{display:inline-flex;align-items:center;gap:10px;border-radius:12px}
+.admin-brand img{width:44px;height:44px;padding:6px;border-radius:14px;background:#fff;border:2px solid #CFE2FF;box-shadow:0 4px 0 #CFE2FF;object-fit:contain;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.admin-brand:hover img{transform:rotate(-8deg) scale(1.06)}
+.admin-brand span{display:flex;flex-direction:column;font-family:var(--font-display);font-weight:800;font-size:20px;line-height:.95;color:var(--dragon)}
+.admin-brand small{font-family:var(--font-body);font-size:11px;font-weight:800;letter-spacing:.08em;color:#4A5A75;text-transform:uppercase}
+
+/* The loops are rendered on white; multiply drops that white onto the tinted page. */
+.admin-mascot{mix-blend-mode:multiply}
+.admin-mascot img,.admin-mascot video{width:100%;height:auto}
+
+/* ---------- Login gate ---------- */
+.admin-gate{display:flex;flex-direction:column;align-items:center}
+.admin-gate>.admin-brand{align-self:center}
+.admin-stage{position:relative;display:flex;flex-direction:column;align-items:center;width:min(100%,420px);margin-top:12px}
+.admin-stage .admin-mascot{width:clamp(130px,30svh,190px);margin-bottom:-22px;position:relative;z-index:2;animation:admin-bob 3.2s ease-in-out infinite;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.admin-bubble{position:relative;margin:0 0 6px;max-width:300px;padding:10px 16px;border-radius:16px;background:#fff;border:2px solid #CFE2FF;box-shadow:0 4px 0 #CFE2FF;font-weight:800;font-size:14px;line-height:1.35;text-align:center;animation:admin-pop .3s cubic-bezier(.34,1.56,.64,1)}
+.admin-bubble::after{content:"";position:absolute;left:50%;bottom:-9px;width:14px;height:14px;background:#fff;border:solid #CFE2FF;border-width:0 2px 2px 0;transform:translateX(-50%) rotate(45deg)}
+/* Mascot reactions */
+.mood-shy .admin-mascot{animation:none;transform:rotate(-10deg) translateX(-10px) scale(.96)}
+.mood-thinking .admin-mascot{animation:admin-hop .55s ease-in-out infinite}
+.mood-oops .admin-mascot{animation:admin-wobble .5s ease-in-out}
+.mood-oops .admin-bubble,.mood-tired .admin-bubble{color:var(--dragon-dark);border-color:#F6B7BE;box-shadow:0 4px 0 #F6B7BE}
+.mood-oops .admin-bubble::after,.mood-tired .admin-bubble::after{border-color:#F6B7BE}
+.mood-tired .admin-mascot{animation:none;transform:translateY(6px) rotate(4deg);filter:saturate(.75)}
+
+.admin-card{position:relative;z-index:1;width:min(100%,420px);padding:34px clamp(18px,5vw,30px) 26px;border-radius:24px;background:#fff;border:2px solid #CFE2FF;box-shadow:0 6px 0 #CFE2FF}
+.admin-card.is-shaking{animation:admin-shake .42s ease-in-out}
+.admin-card h1{margin:0 0 18px;font-family:var(--font-display);font-weight:800;font-size:clamp(28px,6vw,34px);line-height:1.05;text-align:center;color:var(--text)}
+.admin-card p{margin:0 0 14px;line-height:1.5;color:var(--text-soft);text-align:center}
+.admin-card form{display:grid;gap:8px}
+.admin-card label{font-weight:800;font-size:14px;margin-top:4px}
+.admin-card input{width:100%;min-width:0;min-height:52px;font:inherit;font-weight:700;padding:0 16px;border:2px solid var(--border);border-radius:14px;background:var(--surface);color:var(--text);transition:border-color .15s,background .15s}
+.admin-card input:focus{outline:none;border-color:var(--blue);background:#fff}
+.admin-card input:disabled{opacity:.7}
+.admin-password{position:relative}
+.admin-password input{padding-right:54px}
+.admin-eye{position:absolute;top:50%;right:8px;width:38px;height:38px;display:grid;place-items:center;padding:0;border:0;border-radius:10px;background:transparent;color:var(--text-soft);cursor:pointer;transform:translateY(-50%)}
+.admin-eye:hover{color:var(--blue);background:var(--blue-tint)}
+.admin-eye svg{width:22px;height:22px}
+.admin-card .btn{margin-top:12px}
+.btn:disabled{cursor:wait;filter:saturate(.6) brightness(1.05)}
+.btn:disabled:active{transform:none;box-shadow:0 var(--btn-depth) 0 var(--btn-ledge)}
+.admin-error{margin:6px 0 0;padding:12px 14px;border-radius:14px;background:var(--dragon-tint);color:var(--dragon-dark);font-weight:800;font-size:14px;line-height:1.4}
+.admin-card .admin-error{text-align:left;color:var(--dragon-dark)}
+.admin-loading{display:flex;justify-content:center;gap:8px;padding:12px 0 18px}
+.admin-loading i{width:14px;height:14px;border-radius:50%;background:var(--dragon);animation:admin-hop .7s ease-in-out infinite}
+.admin-loading i:nth-child(2){background:var(--blue);animation-delay:.12s}
+.admin-loading i:nth-child(3){background:var(--green);animation-delay:.24s}
+.admin-back{margin-top:22px;font-weight:800;font-size:14px;color:#4A5A75;border-radius:8px}
+.admin-back:hover{color:var(--dragon)}
+
+/* ---------- Dashboard ---------- */
+.admin-dash{padding-top:14px;padding-inline:max(16px,calc((100% - 760px) / 2))}
+.admin-top{display:flex;align-items:center;gap:10px}
+.admin-top .admin-brand{margin-right:auto}
+.admin-user{display:inline-flex;align-items:center;gap:8px;min-height:40px;max-width:40vw;padding:0 14px;border-radius:12px;background:#fff;border:2px solid #CFE2FF;font-weight:800;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-user i{flex-shrink:0;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--green-tint)}
+
+.admin-hello{position:relative;display:flex;align-items:center;gap:clamp(12px,3vw,28px);margin-top:22px;padding:18px clamp(16px,4vw,32px);border-radius:24px;background:#fff;border:2px solid #CFE2FF;box-shadow:0 6px 0 #CFE2FF;overflow:hidden}
+.admin-hello .admin-mascot{flex-shrink:0;width:clamp(110px,26vw,180px);animation:admin-pop .5s cubic-bezier(.34,1.56,.64,1)}
+.admin-hello-copy{min-width:0;flex:1}
+.admin-hello h1{margin:0;font-family:var(--font-display);font-weight:800;font-size:clamp(26px,4.6vw,40px);line-height:1.05;overflow-wrap:anywhere}
+.admin-hello h1 em{font-style:normal;color:var(--dragon)}
+.admin-hello p{margin:8px 0 16px;line-height:1.5;color:var(--text-soft);font-weight:600}
+.admin-progress{height:16px;border-radius:999px;background:var(--border);overflow:hidden}
+.admin-progress span{position:relative;display:block;height:100%;border-radius:inherit;background:var(--green);animation:admin-grow .9s .2s cubic-bezier(.34,1.3,.64,1) both}
+.admin-progress span::after{content:"";position:absolute;top:3px;left:8px;right:8px;height:4px;border-radius:4px;background:rgba(255,255,255,.4)}
+.admin-progress-label{display:block;margin-top:6px;font-weight:800;font-size:13px;color:var(--green-shadow)}
+
+.admin-confetti{position:absolute;inset:0;pointer-events:none}
+.admin-confetti i{position:absolute;top:-14px;left:var(--x);width:9px;height:14px;border-radius:3px;opacity:0;animation:admin-fall 1.6s var(--d) ease-in forwards}
+
+/* Duolingo-style path: nodes zigzag down the page. */
+.admin-path{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:18px}
+.admin-quest{--shift:0px;display:flex;align-items:center;gap:14px;padding-left:var(--shift);animation:admin-rise .45s calc(var(--i) * .08s + .15s) ease-out both}
+.admin-quest:nth-child(4n+2){--shift:clamp(0px,6vw,56px)}
+.admin-quest:nth-child(4n+3){--shift:clamp(0px,10vw,96px)}
+.admin-quest:nth-child(4n){--shift:clamp(0px,4vw,36px)}
+.admin-node{flex-shrink:0;width:64px;height:58px;display:grid;place-items:center;border-radius:50%;color:#fff}
+.admin-node svg{width:28px;height:28px}
+.is-done .admin-node{background:var(--green);box-shadow:0 6px 0 var(--green-shadow)}
+.is-locked .admin-node{background:#E5E5E5;box-shadow:0 6px 0 #C9C9C9;color:#AFAFAF}
+.admin-quest-card{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:#fff;border:2px solid var(--border);box-shadow:0 4px 0 var(--border)}
+.is-done .admin-quest-card{border-color:#B7E1C2;box-shadow:0 4px 0 #B7E1C2}
+.admin-quest-icon{flex-shrink:0;width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:var(--blue-tint);color:var(--blue)}
+.is-done .admin-quest-icon{background:var(--green-tint);color:var(--green-shadow)}
+.is-locked .admin-quest-icon{background:var(--surface);color:#AFAFAF}
+.admin-quest-icon svg{width:20px;height:20px}
+.admin-quest-text{display:flex;flex-direction:column;min-width:0;flex:1}
+.admin-quest-text b{font-family:var(--font-display);font-weight:800;font-size:18px;line-height:1.15}
+.admin-quest-text small{margin-top:2px;font-size:13px;font-weight:600;color:var(--text-soft);line-height:1.3}
+.is-locked .admin-quest-text b{color:#8A8A8A}
+.admin-quest-state{flex-shrink:0;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
+.is-done .admin-quest-state{background:var(--green-tint);color:var(--green-shadow)}
+.is-locked .admin-quest-state{background:var(--surface);color:#9A9A9A}
+.admin-dash>.admin-error{margin-top:20px}
+.admin-foot{margin:30px 0 0;text-align:center;font-size:13px;font-weight:700;color:#4A5A75}
+
+@media(max-width:560px){
+  .admin-top .btn{padding:0 12px}
+  .admin-brand span{font-size:18px}
+  .admin-user{display:none}
+  .admin-hello{flex-direction:column;text-align:center}
+  .admin-quest{--shift:0px!important}
+  .admin-quest-state{display:none}
+  .admin-node{width:52px;height:48px}
+}
+
+@keyframes admin-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes admin-hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes admin-wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-9deg)}50%{transform:rotate(7deg)}75%{transform:rotate(-4deg)}}
+@keyframes admin-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+@keyframes admin-pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+@keyframes admin-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes admin-grow{from{width:0}}
+@keyframes admin-fall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(260px) rotate(var(--r))}}

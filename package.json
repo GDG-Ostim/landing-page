@@ -1,0 +1,17 @@
+{
+  "name": "gdg-ostimtech",
+  "private": true,
+  "packageManager": "bun@1.4.3",
+  "workspaces": ["app", "api", "app/packages/*"],
+  "scripts": {
+    "dev:web": "bun run --cwd app dev --host 127.0.0.1 --port 5173 --strictPort",
+    "dev:api": "bun run --cwd api dev",
+    "build": "bun run --cwd api build && bun run --cwd app build",
+    "typecheck": "bun run --cwd api typecheck && bun run --cwd app typecheck",
+    "test": "bun run --cwd api test",
+    "admin:setup": "bun run --cwd api admin:setup",
+    "db:backup": "bun run --cwd api db:backup"
+  },
+  "overrides": { "@types/react": "19.2.15" },
+  "trustedDependencies": ["better-sqlite3", "esbuild"]
+}

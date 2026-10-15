@@ -1,0 +1,35 @@
+# systemd unit for the GDG API on the existing VPS. Install as
+# /etc/systemd/system/gdg-api.service, then: systemctl enable --now gdg-api
+#
+# Layout: releases are replaced on every deploy, DATA_DIR never is.
+#   /opt/gdg-api/current   -> API release (dist/, node_modules/, package.json)
+#   /var/lib/gdg-landing   -> gdg.sqlite, uploads/, backups/ (StateDirectory)
+[Unit]
+Description=GDG Ostim Tech API
+After=network.target
+
+[Service]
+Type=simple
+User=gdg-api
+Group=gdg-api
+WorkingDirectory=/opt/gdg-api/current
+Environment=NODE_ENV=production
+Environment=PORT=3001
+Environment=APP_ORIGIN=https://gdgostimtech.com
+Environment=DATA_DIR=/var/lib/gdg-landing
+Environment=TRUST_PROXY=true
+ExecStart=/usr/bin/node dist/server.js
+Restart=on-failure
+RestartSec=3
+
+StateDirectory=gdg-landing
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/gdg-landing
+
+[Install]
+WantedBy=multi-user.target

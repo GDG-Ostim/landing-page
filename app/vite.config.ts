@@ -23,6 +23,9 @@ export default defineConfig(({ mode, command }) => {
   const designInspectorEnabled = process.env.HF_DESIGN_INSPECTOR === "1" || mode === "design";
 
   return {
+    server: {
+      proxy: { "/api": "http://127.0.0.1:3001" },
+    },
     resolve: {
       alias: [{ find: /^@higgsfield-ai\/icons(\/.*)?$/, replacement: QUANTA_ICONS_SHIM }],
     },
@@ -78,7 +81,7 @@ export default defineConfig(({ mode, command }) => {
         // STATIC_EXPORT=1 renders the landing page to plain HTML for hosting on
         // our own nginx box (gdgostimtech.com) instead of the Workers platform.
         ...(process.env.STATIC_EXPORT === "1"
-          ? { pages: [{ path: "/" }, { path: "/links" }], prerender: { enabled: true, crawlLinks: false, autoStaticPathsDiscovery: false } }
+          ? { pages: [{ path: "/" }, { path: "/links" }, { path: "/admin" }], prerender: { enabled: true, crawlLinks: false, autoStaticPathsDiscovery: false } }
           : {}),
       }),
       higgsfieldDesignInspectorVitePlugin(designInspectorEnabled),
