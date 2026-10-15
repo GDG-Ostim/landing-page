@@ -70,6 +70,9 @@ deployment step. Use the root `bun.lock`; do not create a separate workspace loc
 | DELETE | `/api/admin/links/:id` | Remove a card; positions are renumbered |
 | POST | `/api/admin/links/:id/move` | `{ direction: "up" \| "down" }` swaps with the neighbour |
 
+| GET | `/api/social` | Public `{ instagram, linkedin, email }` |
+| GET / PUT | `/api/admin/social` | Read / save all three at once; per-field `errors` on HTTP 400 |
+
 Link addresses accept `https://`/`http://`, e-mail (stored as `mailto:`) or a same-site path
 such as `/`. Icons come from a fixed list shared by `api/src/links.ts` and `app/src/lib/social.tsx`.
 Schema changes are append-only entries in `api/src/database.ts`.
@@ -120,5 +123,11 @@ mascot-led admin login/dashboard.
 
 Phase 2: `/links` cards are stored in SQLite (seeded with the previous cards) and
 managed from the panel's Links screen; the page prerenders the seed and then
-shows the live list from `/api/links`. Link CRUD, social
+shows the live list from `/api/links`.
+
+Phase 3: Instagram, LinkedIn and e-mail are stored once (`settings` table) and read
+through `useSocial()` by the header, footer, `/links` icons and the "Duyuruları
+takip et" button. Instagram/LinkedIn must stay on their own domains (`@name` and a
+missing `https://` are filled in); the e-mail is stored bare and `mailto:` is added
+by the site. The admin view lives in `?view=links|social`. Link CRUD, social
 settings and event management are deliberately left for their own phases.

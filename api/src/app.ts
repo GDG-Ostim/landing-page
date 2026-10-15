@@ -4,6 +4,7 @@ import type { Config } from "./config.js";
 import type { Db } from "./database.js";
 import { DUMMY_HASH, sessionToken, tokenHash, verifyPassword } from "./auth.js";
 import { adminLinks, publicLinks } from "./links.js";
+import { adminSocial, publicSocial } from "./social.js";
 
 const SESSION_MS = 8 * 60 * 60 * 1000;
 const LIMIT_MS = 15 * 60 * 1000;
@@ -36,6 +37,7 @@ export function createApp(db: Db, config: Config, now = Date.now) {
   });
   // Public, read-only content for the website.
   app.use(publicLinks(db));
+  app.use(publicSocial(db));
 
   const consumeAttempt = db.transaction((ip: string) => {
     const time = now();
@@ -102,6 +104,7 @@ export function createApp(db: Db, config: Config, now = Date.now) {
   });
   app.get("/api/admin/session", (_req, res) => res.json({ admin: res.locals.admin }));
   app.use("/api/admin", adminLinks(db));
+  app.use("/api/admin", adminSocial(db));
   app.use((_req, res) => res.status(404).json({ error: "Bulunamadı." }));
   const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
     if (error.type === "entity.too.large") {

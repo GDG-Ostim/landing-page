@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { asset } from "../lib/asset";
-import { Icon, SocialTiles, links } from "../lib/social";
+import { Icon, SocialTiles, links, useSocial } from "../lib/social";
 
 export const Route = createFileRoute("/")({ component: LandingPage });
 
@@ -61,6 +61,11 @@ function LoopArt({ name }: { name: string }) {
           <source src={asset(`/assets/${name}.mp4`)} type="video/mp4" />
         </video>}
   </div>;
+}
+
+/** "Follow announcements" opens the LinkedIn page managed in the admin panel. */
+function FollowButton() {
+  return <a className="btn btn-blue" href={useSocial().linkedin} target="_blank" rel="noreferrer">Duyuruları takip et</a>;
 }
 
 function LandingPage() {
@@ -169,7 +174,7 @@ function LandingPage() {
           <div className="event-body"><time>{event.date}</time><h3>{event.title}</h3><p>{event.type} · {event.place}</p></div>
         </article>)}
       </div>
-      <div className="events-cta"><a className="btn btn-blue" href={links.linkedin} target="_blank" rel="noreferrer">Duyuruları takip et</a></div>
+      <div className="events-cta"><FollowButton /></div>
     </section>
 
     <section className="team" id="team" aria-labelledby="team-title">

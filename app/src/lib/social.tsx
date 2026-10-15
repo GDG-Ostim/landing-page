@@ -35,16 +35,35 @@ export const links = {
   ],
 };
 
-export const socials: { id: IconName; label: string; href: string }[] = [
-  { id: "instagram", label: "Instagram", href: links.instagram },
-  { id: "linkedin", label: "LinkedIn", href: links.linkedin },
-  { id: "mail", label: "E-posta", href: links.mail },
+export type Social = { instagram: string; linkedin: string; email: string };
+/** Social addresses before the API answers (and in the prerendered HTML). Mirrors the API's seed. */
+export const defaultSocial: Social = { instagram: links.instagram, linkedin: links.linkedin, email: links.mail.replace(/^mailto:/, "") };
+
+/** The one source for every Instagram / LinkedIn / e-mail link on the site; managed in the admin panel. */
+export function useSocial() {
+  return useQuery({
+    queryKey: ["social"],
+    queryFn: async () => {
+      const response = await fetch("/api/social", { cache: "no-store" });
+      if (!response.ok) throw new Error(`social ${response.status}`);
+      return ((await response.json()) as { social: Social }).social;
+    },
+    initialData: defaultSocial,
+    retry: 1,
+  }).data;
+}
+
+export const socialTiles = (social: Social): { id: IconName; label: string; href: string }[] => [
+  { id: "instagram", label: "Instagram", href: social.instagram },
+  { id: "linkedin", label: "LinkedIn", href: social.linkedin },
+  { id: "mail", label: "E-posta", href: `mailto:${social.email}` },
 ];
 
-/** Row of small 3D icon tiles. */
-export function SocialTiles({ className = "" }: { className?: string }) {
+/** Row of small 3D icon tiles. `social` overrides the live values (admin preview). */
+export function SocialTiles({ className = "", social }: { className?: string; social?: Social }) {
+  const live = useSocial();
   return <div className={`social-tiles ${className}`}>
-    {socials.map(s => <a className={`social-tile ${s.id}`} href={s.href} key={s.id} aria-label={s.label}
+    {socialTiles(social ?? live).map(s => <a className={`social-tile ${s.id}`} href={s.href} key={s.id} aria-label={s.label}
       {...(s.id === "mail" ? {} : { target: "_blank", rel: "noreferrer" })}><Icon name={s.id} /></a>)}
   </div>;
 }

@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { Icon, type IconName } from "../lib/social";
 import { BackIcon, Brand, CheckIcon, Confetti, EyeIcon, KeyIcon, LockIcon, Mascot, api } from "../admin/ui";
 import { LinksScreen } from "../admin/links-screen";
+import { SocialScreen } from "../admin/social-screen";
 import "../admin.css";
 
 export const Route = createFileRoute("/admin")({
@@ -10,22 +11,25 @@ export const Route = createFileRoute("/admin")({
     { title: "Yönetim · GDG Ostim Tech" },
     { name: "robots", content: "noindex, nofollow" },
   ] }),
+  // ?view=links keeps the open screen across reloads and makes Back work.
+  validateSearch: (search: Record<string, unknown>): { view?: Exclude<View, "home"> } =>
+    views.includes(search.view as View) && search.view !== "home" ? { view: search.view as Exclude<View, "home"> } : {},
   component: AdminPage,
 });
 
 type Admin = { username: string };
 type Screen = "loading" | "login" | "authenticated" | "unavailable";
 type Mood = "idle" | "shy" | "thinking" | "oops" | "tired";
-type View = "home" | "links";
+type View = "home" | "links" | "social";
 
 // The admin's quest path. A quest with a `view` is a finished screen the node opens.
 const quests: { id: string; title: string; note: string; icon: IconName | "key"; view?: View; done: boolean }[] = [
   { id: "login", title: "Yönetici girişi", note: "Güvenli oturum ve kalıcı veri altyapısı", icon: "key", done: true },
   { id: "links", title: "Linkler", note: "/links sayfasındaki kartları yönet", icon: "users", view: "links", done: true },
-  { id: "social", title: "Sosyal adresler", note: "Instagram, LinkedIn ve e-posta", icon: "instagram", done: false },
+  { id: "social", title: "Sosyal adresler", note: "Instagram, LinkedIn ve e-posta", icon: "instagram", view: "social", done: true },
   { id: "events", title: "Etkinlikler", note: "Ana sayfadaki etkinlik slider'ı", icon: "calendar", done: false },
 ];
-const views: View[] = ["home", "links"];
+const views: View[] = ["home", "links", "social"];
 
 const bubbles: Record<Mood, string> = {
   idle: "Selam! Paneli açmak için giriş yap.",
@@ -33,11 +37,6 @@ const bubbles: Record<Mood, string> = {
   thinking: "Bir saniye, kontrol ediyorum…",
   oops: "Hmm, bu bilgiler tutmadı. Bir daha dene!",
   tired: "Çok deneme oldu, biraz mola verelim.",
-};
-
-const viewFromHash = (): View => {
-  const name = window.location.hash.slice(1) as View;
-  return views.includes(name) ? name : "home";
 };
 
 function AdminPage() {
@@ -51,17 +50,11 @@ function AdminPage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
-  const [view, setView] = useState<View>("home");
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  // The hash keeps the open screen across reloads and makes Back work.
-  useEffect(() => {
-    const sync = () => setView(viewFromHash());
-    sync();
-    window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
-  }, []);
-  const go = (next: View) => { window.location.hash = next === "home" ? "" : next; setView(next); window.scrollTo(0, 0); };
+  const view: View = Route.useSearch().view ?? "home";
+  const navigate = useNavigate({ from: "/admin" });
+  const go = (next: View) => { void navigate({ search: next === "home" ? {} : { view: next } }); window.scrollTo(0, 0); };
 
   async function checkSession() {
     setScreen("loading");
@@ -136,6 +129,7 @@ function AdminPage() {
       </header>
 
       {view === "links" && <LinksScreen onExpired={expired} />}
+      {view === "social" && <SocialScreen onExpired={expired} />}
 
       {view === "home" && <>
         <section className="admin-hello" aria-labelledby="admin-title">

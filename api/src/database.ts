@@ -47,6 +47,22 @@ const migrations: Migration[] = [
       ["Web sitemiz", "/", "world", "gdgostimtech.com"],
     ].forEach((row, index) => insert.run(...row, index, Date.now()));
   },
+  db => {
+    db.exec(`
+      CREATE TABLE settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at INTEGER NOT NULL
+      );
+    `);
+    // The social addresses the site hard-coded before the panel existed.
+    const insert = db.prepare("INSERT INTO settings (key, value, updated_at) VALUES (?, ?, ?)");
+    [
+      ["social.instagram", "https://instagram.com/gdgostimtech"],
+      ["social.linkedin", "https://www.linkedin.com/company/ostimtech-gdsc/"],
+      ["social.email", "gdgostimtech@outlook.com"],
+    ].forEach(([key, value]) => insert.run(key, value, Date.now()));
+  },
 ];
 
 export function openDatabase(dataDir: string) {
